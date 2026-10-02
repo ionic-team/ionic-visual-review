@@ -12,7 +12,7 @@ env:
 
 jobs:
   checks:
-    name: Lint, Typecheck and Spec
+    name: Checks
     runs-on: ubuntu-latest
 
     steps:
