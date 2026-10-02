@@ -12,10 +12,19 @@ html,
  */
 body {
   height: 100%;
+
   margin: 0;
+
   background: var(--bg);
   color: var(--text);
-  font: 13px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  font:
+    13px/1.5 -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    system-ui,
+    sans-serif;
+
   overflow: hidden;
 }
 
@@ -23,8 +32,9 @@ button,
 input,
 select,
 textarea {
-  font: inherit;
   color: inherit;
+
+  font: inherit;
 }
 
 .mono {
@@ -47,16 +57,21 @@ textarea {
 .layout {
   display: grid;
   grid-template-columns: 340px minmax(0, 1fr);
+
   height: calc(100% - 48px);
 }
 
 .field {
   width: 100%;
+
   padding: 6px 9px;
+
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: var(--bg);
+
   outline: none;
+
+  background: var(--bg);
 }
 
 .field:focus {
@@ -65,8 +80,11 @@ textarea {
 
 .field-select {
   width: auto;
+
   margin-left: auto;
+
   padding: 4px 6px;
+
   font-size: 11px;
 }
 
@@ -77,12 +95,16 @@ textarea {
 
 .check {
   display: inline-flex;
+
   align-items: center;
-  gap: 6px;
+
   color: var(--muted);
+
+  white-space: nowrap;
+
   cursor: pointer;
   user-select: none;
-  white-space: nowrap;
+  gap: 6px;
 }
 
 .check input {
@@ -92,7 +114,9 @@ textarea {
 
 .main {
   display: flex;
+
   flex-direction: column;
+
   min-width: 0;
   min-height: 0;
 }

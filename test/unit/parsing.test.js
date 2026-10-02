@@ -1,9 +1,9 @@
-import { describe, test } from 'node:test';
 import assert from 'node:assert/strict';
+import { describe, test } from 'node:test';
 
-import { indexScreenshotCalls, splitName } from '../../src/git.mjs';
-import { kb, percent } from '../../src/client/scripts/format.js';
 import { setLead } from '../../src/client/scripts/entries.js';
+import { kb, percent } from '../../src/client/scripts/format.js';
+import { indexScreenshotCalls, splitName } from '../../src/git.mjs';
 import { BADGE_SPEC } from '../fixtures/repo.js';
 
 describe('names: screenshot files', () => {
@@ -21,7 +21,10 @@ describe('names: screenshot files', () => {
 
   test('should read the ionic theme apart from the mode it runs on', () => {
     const { theme, mode, palette, name } = splitName('badge-hint-ionic-md-ltr-light-Mobile-Safari-linux.png');
-    assert.deepEqual({ theme, mode, palette, name }, { theme: 'ionic', mode: 'md', palette: 'light', name: 'badge-hint' });
+    assert.deepEqual(
+      { theme, mode, palette, name },
+      { theme: 'ionic', mode: 'md', palette: 'light', name: 'badge-hint' }
+    );
   });
 
   test('should match the longest palette when a shorter one is its suffix', () => {

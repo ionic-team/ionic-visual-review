@@ -1,5 +1,5 @@
-import { after, before, describe, test } from 'node:test';
 import assert from 'node:assert/strict';
+import { after, before, describe, test } from 'node:test';
 import { setTimeout as wait } from 'node:timers/promises';
 
 import { attachTests, buildManifest } from '../../src/git.mjs';
@@ -23,17 +23,14 @@ describe('manifest: changed snapshots', () => {
   after(() => fixture.cleanup());
 
   test('should list every changed snapshot with its status', () => {
-    assert.deepEqual(
-      Object.fromEntries(entries.map((entry) => [entry.path, entry.status])),
-      {
-        [FIXTURE.modified]: 'M',
-        [FIXTURE.added]: 'A',
-        [FIXTURE.removed]: 'D',
-        [FIXTURE.renamedTo]: 'R',
-        [FIXTURE.reencoded]: 'M',
-        [FIXTURE.orphan]: 'M',
-      }
-    );
+    assert.deepEqual(Object.fromEntries(entries.map((entry) => [entry.path, entry.status])), {
+      [FIXTURE.modified]: 'M',
+      [FIXTURE.added]: 'A',
+      [FIXTURE.removed]: 'D',
+      [FIXTURE.renamedTo]: 'R',
+      [FIXTURE.reencoded]: 'M',
+      [FIXTURE.orphan]: 'M',
+    });
   });
 
   test('should record where a renamed snapshot came from', () => {

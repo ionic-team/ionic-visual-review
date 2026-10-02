@@ -4,8 +4,8 @@ import { wireControls } from './scripts/controls.js';
 import { dom } from './scripts/dom.js';
 import { indexGroups, reencodedOnly } from './scripts/entries.js';
 import { applyFilter, renderFacets, restoreGrouping } from './scripts/filters.js';
-import { blobUrl } from './scripts/links.js';
 import { wireKeyboard } from './scripts/keyboard.js';
+import { blobUrl } from './scripts/links.js';
 import { renderList, renderProgress } from './scripts/list.js';
 import { select } from './scripts/stage.js';
 import { state } from './scripts/state.js';
@@ -70,7 +70,7 @@ const init = async () => {
 
   renderFacets();
 
-  document.documentElement.style.setProperty('--onion', dom.onion.value / 100);
+  document.documentElement.style.setProperty('--onion', String(dom.onion.valueAsNumber / 100));
 
   applyFilter();
   renderList();
@@ -85,11 +85,13 @@ const init = async () => {
   checkFreshness();
 
   /* Warm the cache so stepping through hundreds of screenshots stays instant. */
-  const queue = state.entries.flatMap((entry) => [
-    entry.status === 'A' ? null : blobUrl('expected', entry.path),
-    entry.status === 'D' ? null : blobUrl('actual', entry.path),
-    entry.comparable ? blobUrl('diff', entry.path) : null,
-  ]).filter(Boolean);
+  const queue = state.entries
+    .flatMap((entry) => [
+      entry.status === 'A' ? null : blobUrl('expected', entry.path),
+      entry.status === 'D' ? null : blobUrl('actual', entry.path),
+      entry.comparable ? blobUrl('diff', entry.path) : null,
+    ])
+    .filter(Boolean);
 
   await Promise.all(
     Array.from({ length: 6 }, async () => {

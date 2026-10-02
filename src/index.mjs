@@ -20,17 +20,16 @@
  *   npm start -- --base origin/main --head my-branch
  *   npm start -- --pr 31321 --path ':(top)core/src/components/textarea/**\/*.png'
  */
-import { createServer } from 'node:http';
-import { readFile, mkdir, readdir, rm, stat, utimes, writeFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
 import { execFile } from 'node:child_process';
+import { readFile, mkdir, readdir, rm, stat, utimes, writeFile } from 'node:fs/promises';
+import { createServer } from 'node:http';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
-
 import sirv from 'sirv';
 
+import { comparePng, pngSize } from './diff.mjs';
 import {
   BlobReader,
   DEFAULT_PATHSPEC,
@@ -51,7 +50,6 @@ import {
   resolveRef,
   stateDir,
 } from './git.mjs';
-import { comparePng, pngSize } from './diff.mjs';
 
 /** @typedef {import('./git.mjs').ManifestEntry} ManifestEntry */
 /** @typedef {import('./git.mjs').Thread} Thread */
@@ -101,12 +99,30 @@ import { comparePng, pngSize } from './diff.mjs';
  * @typedef {object} Store
  * @property {string} file
  * @property {{ carried: number, reset: number }} summary
- * @property {() => object} read The state sent to the client.
+ * @property {() => ReviewState} read The state sent to the client.
  * @property {() => { path: string, body: string }[]} unsentComments
  * @property {(posted: { path: string, id: string | null }[]) => void} markPosted
  * @property {(path: string) => string | null} postedIdFor
  * @property {(path: string) => void} forgetComment
- * @property {(patch: object) => { flipped: string[] }} update
+ * @property {(patch: Patch) => { flipped: string[] }} update
+ */
+
+/**
+ * @typedef {object} ReviewState
+ * @property {Record<string, true>} viewed
+ * @property {Record<string, string>} comments
+ * @property {string[]} stale
+ * @property {string[]} unsent
+ * @property {string[]} posted
+ */
+
+/**
+ * One write from the client: a single path or a directory's worth.
+ * @typedef {object} Patch
+ * @property {string} [path]
+ * @property {string[]} [paths]
+ * @property {boolean} [viewed]
+ * @property {string} [comment]
  */
 
 /**
@@ -130,10 +146,7 @@ import { comparePng, pngSize } from './diff.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const CLIENT_DIR = join(HERE, 'client');
 /* Resolved rather than walked to, so it is found wherever npm put node_modules. */
-const SLIDER_PKG = join(
-  dirname(createRequire(import.meta.url).resolve('img-comparison-slider/package.json')),
-  'dist'
-);
+const SLIDER_PKG = join(dirname(createRequire(import.meta.url).resolve('img-comparison-slider/package.json')), 'dist');
 const DEFAULT_PORT = 4300;
 
 const usage = `
@@ -538,10 +551,7 @@ const buildDiffs = async ({ entries, reader, mergeBase, head, cacheRoot }) => {
       if (record) {
         /* Touched so that a pair still in use is not swept for being old. */
         const now = new Date();
-        await Promise.all([
-          utimes(paths.png, now, now).catch(() => {}),
-          utimes(paths.meta, now, now).catch(() => {}),
-        ]);
+        await Promise.all([utimes(paths.png, now, now).catch(() => {}), utimes(paths.meta, now, now).catch(() => {})]);
         reused++;
       } else {
         const compared = comparePng(expected, actual);
@@ -781,7 +791,9 @@ export const main = async () => {
   /* Started from this repository's own folder, the review would look for the pull
      request here and fail with an error that does not say why. */
   if (cwd === (await repoRoot(HERE).catch(() => null))) {
-    throw new Error('This is the reviewer itself. Pass --repo <path to ionic-framework>, e.g. --repo ../ionic-framework.');
+    throw new Error(
+      'This is the reviewer itself. Pass --repo <path to ionic-framework>, e.g. --repo ../ionic-framework.'
+    );
   }
 
   /* Writing to a pull request is done as whoever gh is logged in as. With no account
@@ -807,9 +819,14 @@ export const main = async () => {
       if (req.method === 'POST' && url.pathname === '/api/comments/publish') {
         /* Only a pull request has somewhere to post to. A ref range does not. */
         if (!args.pr) {
-          return send(res, 400, JSON.stringify({ error: 'Comments can only be posted when reviewing a pull request.' }), {
-            'content-type': 'application/json',
-          });
+          return send(
+            res,
+            400,
+            JSON.stringify({ error: 'Comments can only be posted when reviewing a pull request.' }),
+            {
+              'content-type': 'application/json',
+            }
+          );
         }
 
         if (!viewer) {
@@ -842,9 +859,14 @@ export const main = async () => {
            the two never disagree about what is published. */
         if (postedId) {
           if (!args.pr || !viewer) {
-            return send(res, 400, JSON.stringify({ error: 'No GitHub account to delete this from the pull request.' }), {
-              'content-type': 'application/json',
-            });
+            return send(
+              res,
+              400,
+              JSON.stringify({ error: 'No GitHub account to delete this from the pull request.' }),
+              {
+                'content-type': 'application/json',
+              }
+            );
           }
           await deleteComment({ id: postedId, cwd });
         }
@@ -910,9 +932,7 @@ export const main = async () => {
         /* The mark is recorded either way. Whether it still applies is the separate
            question answered here, against the paths the mark actually touched. */
         const touched = patch.paths ?? (patch.path ? [patch.path] : []);
-        const freshness = await review.pushWatch
-          .check(touched, review.byPath)
-          .catch(() => ({ moved: false }));
+        const freshness = await review.pushWatch.check(touched, review.byPath).catch(() => ({ moved: false }));
 
         return send(res, 200, JSON.stringify({ ok: true, freshness, mirrored }), {
           'content-type': 'application/json',
@@ -946,16 +966,17 @@ export const main = async () => {
 
         /* The diff is generated, so it comes off disk. Expected and actual are the
            originals, read straight out of the object store. */
-        const blob = side === 'diff'
-          ? review.diffs.has(path)
-            ? await readFile(review.diffs.get(path))
-            : null
-          : path
-            ? await reader.read(
-                side === 'expected' ? review.mergeBase : review.headSha,
-                side === 'expected' ? (review.baselinePaths.get(path) ?? path) : path
-              )
-            : null;
+        const blob =
+          side === 'diff'
+            ? review.diffs.has(path)
+              ? await readFile(review.diffs.get(path))
+              : null
+            : path
+              ? await reader.read(
+                  side === 'expected' ? review.mergeBase : review.headSha,
+                  side === 'expected' ? (review.baselinePaths.get(path) ?? path) : path
+                )
+              : null;
 
         if (!blob) {
           return send(res, 404, 'not found');

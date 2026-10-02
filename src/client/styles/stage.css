@@ -7,17 +7,22 @@
  */
 .stage {
   display: flex;
+
   flex: 1;
   flex-direction: column;
-  gap: 14px;
   /* The safe keyword centres while content fits and falls back to start when it does
      not, which is what keeps a 2x screenshot from having its top and left cut off. */
   align-items: safe center;
   justify-content: safe center;
+
   min-height: 0;
-  overflow: auto;
+
   padding: 20px;
+
   background: repeating-conic-gradient(var(--checker-a) 0% 25%, var(--checker-b) 0% 50%) 50% / 18px 18px;
+
+  overflow: auto;
+  gap: 14px;
 }
 
 .stage.upscaled img {
@@ -31,8 +36,9 @@
  * need a closer look.
  */
 .stage[data-status='D'] .pane {
-  opacity: 0.45;
   transition: opacity 120ms ease;
+
+  opacity: 0.45;
 }
 
 .stage[data-status='D'] .pane:hover {
@@ -53,16 +59,20 @@
 .view.show {
   display: flex;
   gap: 18px;
+
   align-items: flex-start;
   justify-content: center;
 }
 
 figure {
   display: flex;
+
   flex-direction: column;
-  gap: 7px;
-  margin: 0;
+
   min-width: 0;
+
+  margin: 0;
+  gap: 7px;
 }
 
 figure[hidden] {
@@ -83,8 +93,11 @@ figcaption a:hover {
 figcaption {
   display: flex;
   gap: 8px;
+
   align-items: baseline;
+
   color: var(--muted);
+
   font-size: 11px;
   font-weight: 500;
 }
@@ -96,12 +109,15 @@ figcaption {
   /* Literal white in both themes: the browser rendered these screenshots on white,
      so anything else would misrepresent them. */
   background: #fff;
-  overflow: hidden;
+
   line-height: 0;
+
+  overflow: hidden;
 }
 
 .pane img {
   display: block;
+
   width: var(--shot-width);
   max-width: none;
   height: auto;
@@ -123,6 +139,7 @@ figcaption {
   position: absolute;
   top: 0;
   left: 0;
+
   width: 100%;
   height: auto;
   pointer-events: none;
@@ -134,13 +151,14 @@ figcaption {
 
 /* The slider is a web component. It only needs sizing and handle colours. */
 img-comparison-slider {
-  display: block;
-  width: var(--shot-width);
   --divider-width: 2px;
   --divider-color: var(--accent);
   --default-handle-color: var(--accent);
   --default-handle-opacity: 1;
   --default-handle-width: 40px;
+  display: block;
+
+  width: var(--shot-width);
 }
 
 img-comparison-slider img {
@@ -151,11 +169,16 @@ img-comparison-slider img {
    there is nothing to look at is no use once a tall screenshot has pushed it off. */
 .notice {
   display: none;
+
   flex: 0 0 auto;
   gap: 8px;
+
   align-items: center;
+
   margin: 0;
+
   padding: 8px 16px;
+
   border-bottom: 1px solid var(--line-soft);
   /* Tinted rather than panel-coloured, because sharing the toolbar's background made
      it read as another strip of chrome instead of as something to notice. */
@@ -163,23 +186,31 @@ img-comparison-slider img {
   /* Body text on the tint, not accent on tint: the accent pair only reaches 4.3:1 in
      dark mode. The icon carries the colour instead. */
   color: var(--text);
+
   font-size: 12px;
 }
 
 /* A circled i, drawn rather than fetched, so the strip announces itself as a note. */
 .notice::before {
   flex: 0 0 auto;
+
   width: 14px;
   height: 14px;
+
   border: 1px solid var(--accent);
   border-radius: 50%;
+
   color: var(--accent);
-  content: 'i';
+
   font-size: 10px;
   font-style: italic;
   font-weight: 700;
+
   line-height: 13px;
+
   text-align: center;
+
+  content: 'i';
 }
 
 .notice.show {

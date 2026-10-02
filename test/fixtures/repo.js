@@ -3,7 +3,6 @@ import { execFileSync } from 'node:child_process';
 import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-
 import { PNG } from 'pngjs';
 
 const BADGE = 'core/src/components/badge/test/basic';

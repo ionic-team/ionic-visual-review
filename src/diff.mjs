@@ -1,5 +1,5 @@
-import { PNG } from 'pngjs';
 import pixelmatch from 'pixelmatch';
+import { PNG } from 'pngjs';
 
 /** @typedef {{ width: number, height: number }} Size */
 

@@ -11,9 +11,18 @@
   },
   "scripts": {
     "start": "node src/cli.mjs",
+    "eslint": "eslint .",
+    "lint": "npm run lint.js && npm run lint.css && npm run prettier -- --write --cache",
+    "lint.fix": "npm run lint.js.fix && npm run lint.css.fix && npm run prettier -- --write --cache",
+    "lint.css": "stylelint \"src/**/*.css\"",
+    "lint.css.fix": "npm run lint.css -- --fix",
+    "lint.js": "npm run eslint",
+    "lint.js.fix": "npm run eslint -- --fix",
+    "prettier": "prettier \"./**/*.{html,js,mjs,css,md}\"",
     "test": "npm run test.spec && npm run test.e2e",
     "test.spec": "node --test 'test/unit/**/*.test.js' 'test/integration/**/*.test.js'",
-    "test.e2e": "npx playwright test"
+    "test.e2e": "npx playwright test",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "img-comparison-slider": "^8.0.7",
@@ -22,6 +31,18 @@
     "sirv": "^3.0.2"
   },
   "devDependencies": {
-    "@playwright/test": "1.63.0"
+    "@eslint/js": "^9.39.5",
+    "@ionic/prettier-config": "^4.0.0",
+    "@playwright/test": "1.63.0",
+    "@types/node": "^24.19.1",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-playwright": "^2.12.0",
+    "globals": "^17.13.0",
+    "prettier": "^3.9.9",
+    "stylelint": "^16.26.1",
+    "stylelint-order": "^7.0.1",
+    "typescript": "^7.0.2"
   }
 }

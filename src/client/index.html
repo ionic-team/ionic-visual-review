@@ -43,8 +43,12 @@
           <div class="control-row">
             <label class="check"><input id="unviewedOnly" type="checkbox" /> Unviewed only</label>
             <label class="check"><input id="groupBrowsers" type="checkbox" /> One row per test</label>
-            <label id="orphansOnlyLabel" class="check" hidden><input id="orphansOnly" type="checkbox" /> Missing test only</label>
-            <label id="reencodedOnlyLabel" class="check" hidden><input id="reencodedOnly" type="checkbox" /> Encoding differs only</label>
+            <label id="orphansOnlyLabel" class="check" hidden
+              ><input id="orphansOnly" type="checkbox" /> Missing test only</label
+            >
+            <label id="reencodedOnlyLabel" class="check" hidden
+              ><input id="reencodedOnly" type="checkbox" /> Encoding differs only</label
+            >
           </div>
         </div>
         <p id="carried" class="carried" hidden></p>
@@ -97,11 +101,15 @@
         <div id="stage" class="stage">
           <div id="viewSxs" class="view view-sxs">
             <figure id="figExpected">
-              <figcaption><span id="labelExpected">Expected</span> <span id="bytesExpected" class="mono dim"></span></figcaption>
+              <figcaption>
+                <span id="labelExpected">Expected</span> <span id="bytesExpected" class="mono dim"></span>
+              </figcaption>
               <div class="pane"><img id="sxsExpected" alt="Expected screenshot" draggable="false" /></div>
             </figure>
             <figure id="figActual">
-              <figcaption><span id="labelActual">Actual</span> <span id="bytesActual" class="mono dim"></span></figcaption>
+              <figcaption>
+                <span id="labelActual">Actual</span> <span id="bytesActual" class="mono dim"></span>
+              </figcaption>
               <div class="pane"><img id="sxsActual" alt="Actual screenshot" draggable="false" /></div>
             </figure>
           </div>
@@ -145,97 +153,113 @@
       <div class="help-columns">
         <h2>What the list is telling you</h2>
         <dl class="legend">
-        <dt><span class="dot M"></span></dt><dd>Modified. Both versions exist and the pixels differ.</dd>
-        <dt><span class="dot A"></span></dt><dd>Added. No baseline to compare against.</dd>
-        <dt><span class="dot D"></span></dt><dd>Removed. Showing the image being deleted.</dd>
-        <dt><span class="dot R"></span></dt><dd>Renamed. Compared against its old path.</dd>
-        <dt><span class="tick">✓</span></dt><dd>Viewed. The row dims once it is.</dd>
-        <dt><span class="note"></span></dt><dd>Has a comment.</dd>
-        <dt class="mono">5%</dt><dd>Share of pixels that changed.</dd>
+          <dt><span class="dot M"></span></dt>
+          <dd>Modified. Both versions exist and the pixels differ.</dd>
+          <dt><span class="dot A"></span></dt>
+          <dd>Added. No baseline to compare against.</dd>
+          <dt><span class="dot D"></span></dt>
+          <dd>Removed. Showing the image being deleted.</dd>
+          <dt><span class="dot R"></span></dt>
+          <dd>Renamed. Compared against its old path.</dd>
+          <dt><span class="tick">✓</span></dt>
+          <dd>Viewed. The row dims once it is.</dd>
+          <dt><span class="note"></span></dt>
+          <dd>Has a comment.</dd>
+          <dt class="mono">5%</dt>
+          <dd>Share of pixels that changed.</dd>
         </dl>
         <h2>Directories</h2>
         <ul>
-        <li>The checkbox marks everything beneath it that the current filters admit.</li>
-        <li>A dash means only part of the directory is viewed.</li>
-        <li>
-        Filter to the browsers you review before ticking, and only those get marked.
-        </li>
+          <li>The checkbox marks everything beneath it that the current filters admit.</li>
+          <li>A dash means only part of the directory is viewed.</li>
+          <li>Filter to the browsers you review before ticking, and only those get marked.</li>
         </ul>
         <h2>One row per test</h2>
         <ul>
-        <li>
-        The same test is captured in up to three browsers. Turn this on and those collapse into a
-        single row, showing Chrome where there is one.
-        </li>
-        <li>The number beside a row is how many browsers it stands for. Hover it to see which.</li>
-        <li>
-        Marking that row viewed marks every browser behind it, so a test you are happy with in
-        Chrome is settled in one press.
-        </li>
-        <li>
-        A browser filter still applies: filter to Chrome and a row marks only Chrome, the same way
-        a directory does.
-        </li>
+          <li>
+            The same test is captured in up to three browsers. Turn this on and those collapse into a single row,
+            showing Chrome where there is one.
+          </li>
+          <li>The number beside a row is how many browsers it stands for. Hover it to see which.</li>
+          <li>
+            Marking that row viewed marks every browser behind it, so a test you are happy with in Chrome is settled in
+            one press.
+          </li>
+          <li>
+            A browser filter still applies: filter to Chrome and a row marks only Chrome, the same way a directory does.
+          </li>
         </ul>
         <h2>Filters</h2>
         <ul>
-        <li>
-        The filters sit above the snapshot list: <b>status</b>, <b>browser</b>, <b>mode</b>, <b>theme</b>,
-        <b>direction</b> and <b>palette</b>. Each one shows its values and how many there are.
-        </li>
-        <li>
-        Click a value to narrow to it. Picking more than one value in the same filter widens it,
-        so ltr plus rtl shows both.
-        </li>
-        <li>Picking values in different filters stacks them, so rtl plus dark shows only the screenshots that are both.</li>
-        <li>
-        A filter is hidden when there is nothing to choose, either because the range holds only
-        one of its values or because it would repeat another filter. Most pull requests are
-        entirely ltr and entirely light, so those two rarely appear.
-        </li>
+          <li>
+            The filters sit above the snapshot list: <b>status</b>, <b>browser</b>, <b>mode</b>, <b>theme</b>,
+            <b>direction</b> and <b>palette</b>. Each one shows its values and how many there are.
+          </li>
+          <li>
+            Click a value to narrow to it. Picking more than one value in the same filter widens it, so ltr plus rtl
+            shows both.
+          </li>
+          <li>
+            Picking values in different filters stacks them, so rtl plus dark shows only the screenshots that are both.
+          </li>
+          <li>
+            A filter is hidden when there is nothing to choose, either because the range holds only one of its values or
+            because it would repeat another filter. Most pull requests are entirely ltr and entirely light, so those two
+            rarely appear.
+          </li>
         </ul>
         <h2>What needs GitHub</h2>
         <ul>
-        <li>
-        Marking viewed always works. It is kept in a local file, so the directory ticks, the
-        progress bar, <b>Unviewed only</b>, <kbd>v</kbd> and <kbd>V</kbd> behave the same however
-        the review was started.
-        </li>
-        <li>
-        Reviewing a pull request while signed in also writes that state to the pull request, so
-        its Files tab agrees with what was ticked here.
-        </li>
-        <li>
-        Reviewing a range with <b>--base</b> and <b>--head</b> has no pull request to write to.
-        The comment box is not shown and <kbd>c</kbd> does nothing.
-        </li>
-        <li>
-        Signed out, a pull request still opens and every screenshot is there, read anonymously
-        from GitHub. What needs an account is switched off: comments, and the copy of the viewed
-        state that reaches the Files tab. Comments left by teammates do not appear either.
-        </li>
-        <li>
-        Signed out, a new push is noticed more slowly, because GitHub allows far fewer anonymous
-        requests and the check is spaced out to stay within them.
-        </li>
+          <li>
+            Marking viewed always works. It is kept in a local file, so the directory ticks, the progress bar,
+            <b>Unviewed only</b>, <kbd>v</kbd> and <kbd>V</kbd> behave the same however the review was started.
+          </li>
+          <li>
+            Reviewing a pull request while signed in also writes that state to the pull request, so its Files tab agrees
+            with what was ticked here.
+          </li>
+          <li>
+            Reviewing a range with <b>--base</b> and <b>--head</b> has no pull request to write to. The comment box is
+            not shown and <kbd>c</kbd> does nothing.
+          </li>
+          <li>
+            Signed out, a pull request still opens and every screenshot is there, read anonymously from GitHub. What
+            needs an account is switched off: comments, and the copy of the viewed state that reaches the Files tab.
+            Comments left by teammates do not appear either.
+          </li>
+          <li>
+            Signed out, a new push is noticed more slowly, because GitHub allows far fewer anonymous requests and the
+            check is spaced out to stay within them.
+          </li>
         </ul>
         <h2>Keyboard</h2>
         <dl>
-        <dt><kbd>j</kbd><kbd>k</kbd><kbd>↑</kbd><kbd>↓</kbd></dt><dd>Next and previous</dd>
-        <dt><kbd>v</kbd></dt><dd>Mark viewed and advance</dd>
-        <dt><kbd>V</kbd></dt><dd>Mark the whole directory viewed</dd>
-        <dt><kbd>n</kbd></dt><dd>Next unviewed</dd>
-        <dt><kbd>1</kbd><span class="key-sep">to</span><kbd>4</kbd></dt><dd>Side by side, slider, onion skin, diff</dd>
-        <dt><kbd>z</kbd></dt><dd>Cycle zoom</dd>
-        <dt><kbd>c</kbd></dt><dd>Focus the comment box, when there is a pull request to post to</dd>
-        <dt><kbd>/</kbd></dt><dd>Focus the filter</dd>
-        <dt><kbd>u</kbd></dt><dd>Toggle unviewed only</dd>
-        <dt><kbd>?</kbd></dt><dd>This panel</dd>
-        <dt><kbd>Esc</kbd></dt><dd>Close this panel, or leave a text field</dd>
+          <dt><kbd>j</kbd><kbd>k</kbd><kbd>↑</kbd><kbd>↓</kbd></dt>
+          <dd>Next and previous</dd>
+          <dt><kbd>v</kbd></dt>
+          <dd>Mark viewed and advance</dd>
+          <dt><kbd>V</kbd></dt>
+          <dd>Mark the whole directory viewed</dd>
+          <dt><kbd>n</kbd></dt>
+          <dd>Next unviewed</dd>
+          <dt><kbd>1</kbd><span class="key-sep">to</span><kbd>4</kbd></dt>
+          <dd>Side by side, slider, onion skin, diff</dd>
+          <dt><kbd>z</kbd></dt>
+          <dd>Cycle zoom</dd>
+          <dt><kbd>c</kbd></dt>
+          <dd>Focus the comment box, when there is a pull request to post to</dd>
+          <dt><kbd>/</kbd></dt>
+          <dd>Focus the filter</dd>
+          <dt><kbd>u</kbd></dt>
+          <dd>Toggle unviewed only</dd>
+          <dt><kbd>?</kbd></dt>
+          <dd>This panel</dd>
+          <dt><kbd>Esc</kbd></dt>
+          <dd>Close this panel, or leave a text field</dd>
         </dl>
         <p>
-        Percentages come from pixelmatch. Viewed state and comments are kept locally, and are also
-        written to the pull request when one is being reviewed and gh is signed in.
+          Percentages come from pixelmatch. Viewed state and comments are kept locally, and are also written to the pull
+          request when one is being reviewed and gh is signed in.
         </p>
       </div>
     </dialog>

@@ -1,7 +1,6 @@
+import { expect, test } from '@playwright/test';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-
-import { expect, test } from '@playwright/test';
 
 import { createFixtureRepo } from '../fixtures/repo.js';
 
@@ -17,9 +16,13 @@ let address;
 test.beforeAll(async () => {
   fixture = createFixtureRepo();
   /* The fake gh comes first on PATH, so the review runs signed out and offline. */
-  server = spawn(process.execPath, [CLI, '--repo', fixture.dir, '--base', 'main', '--head', 'feature', '--no-open', '--port', '4410'], {
-    env: { ...process.env, PATH: `${fixture.bin}:${process.env.PATH}` },
-  });
+  server = spawn(
+    process.execPath,
+    [CLI, '--repo', fixture.dir, '--base', 'main', '--head', 'feature', '--no-open', '--port', '4410'],
+    {
+      env: { ...process.env, PATH: `${fixture.bin}:${process.env.PATH}` },
+    }
+  );
 
   address = await new Promise((resolve, reject) => {
     let output = '';
@@ -62,7 +65,9 @@ test('should explain a snapshot whose encoding is the only change', async ({ pag
 
   await expect(page.locator('.row')).toHaveCount(1);
   await page.locator('.row').click();
-  await expect(page.locator('.notice')).toHaveText('No pixel changed. Only the encoding differs, so there is nothing to see.');
+  await expect(page.locator('.notice')).toHaveText(
+    'No pixel changed. Only the encoding differs, so there is nothing to see.'
+  );
 });
 
 test('should keep a viewed mark across a reload', async ({ page }) => {

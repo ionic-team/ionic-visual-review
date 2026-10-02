@@ -75,8 +75,9 @@ const PRIMARY_BROWSER = 'Mobile Chrome';
 /**
  * The screenshot that stands for a set: Chrome when present, since that is the browser
  * the team reads.
- * @param {Entry[]} entries
- * @returns {Entry}
+ * @template {Pick<Entry, 'browser'>} T
+ * @param {T[]} entries
+ * @returns {T}
  */
 export const setLead = (entries) => entries.find((entry) => entry.browser === PRIMARY_BROWSER) ?? entries[0];
 
@@ -107,4 +108,5 @@ export const groupScope = (group) => groupEntries(group).filter((entry) => state
  * @param {Entry[]} entries
  * @returns {number}
  */
-export const countViewed = (entries) => entries.reduce((total, entry) => total + (state.viewed.has(entry.path) ? 1 : 0), 0);
+export const countViewed = (entries) =>
+  entries.reduce((total, entry) => total + (state.viewed.has(entry.path) ? 1 : 0), 0);

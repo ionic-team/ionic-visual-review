@@ -2,26 +2,34 @@
 
 .list {
   flex: 1;
+
   min-height: 0;
   overflow-y: auto;
+
   padding-bottom: 40px;
 }
 
 .group-head {
+  display: grid;
   position: sticky;
   top: 0;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-areas: 'check name count';
+
   align-items: center;
-  gap: 2px 8px;
+
   padding: 7px 12px 7px 10px;
+
   border-bottom: 1px solid var(--line-soft);
+
   background: var(--raised);
   color: var(--muted);
+
   font-family: var(--mono);
   font-size: 11px;
+
+  z-index: 1;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas: 'check name count';
+  gap: 2px 8px;
 }
 
 .group-head.is-done {
@@ -30,24 +38,32 @@
 
 .group-check {
   grid-area: check;
+
   display: flex;
+
   align-items: center;
+
   padding: 2px;
+
   cursor: pointer;
 }
 
 .group-box {
   margin: 0;
   accent-color: var(--accent);
+
   cursor: pointer;
 }
 
 .group-name {
-  grid-area: name;
-  overflow: hidden;
   color: var(--text);
+
   text-overflow: ellipsis;
+
   white-space: nowrap;
+
+  overflow: hidden;
+  grid-area: name;
 }
 
 .group-head.is-done .group-name {
@@ -56,27 +72,35 @@
 
 .group-count {
   grid-area: count;
+
   color: var(--dim);
   font-variant-numeric: tabular-nums;
 }
 
 .row {
   display: grid;
+
+  align-items: center;
+
+  width: 100%;
+
+  padding: 5px 12px;
+
+  border: none;
+  border-left: 2px solid transparent;
+
+  background: none;
+
+  text-align: left;
+
+  cursor: pointer;
   /*
    * Every track is fixed except the name, because each row is its own grid: an auto
    * track sizes to that row's own content, so "Chrome" and "Firefox" landed at
    * different x positions down the list. The name takes what is left and truncates.
    */
   grid-template-columns: 8px 1fr 44px 40px 26px;
-  align-items: center;
   gap: 8px;
-  width: 100%;
-  padding: 5px 12px;
-  border: none;
-  border-left: 2px solid transparent;
-  background: none;
-  cursor: pointer;
-  text-align: left;
 }
 
 .row:hover {
@@ -85,6 +109,7 @@
 
 .row.selected {
   border-left-color: var(--accent);
+
   background: var(--accent-soft);
 }
 
@@ -95,6 +120,7 @@
 .dot {
   width: 6px;
   height: 6px;
+
   border-radius: 50%;
 }
 
@@ -117,21 +143,31 @@
 .row-stem {
   font-family: var(--mono);
   font-size: 11px;
-  white-space: nowrap;
-  overflow: hidden;
+
   text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  overflow: hidden;
 }
 
 /* The browser column becomes a count when one row answers for several screenshots. */
 .row-kin {
   display: inline-block;
+
   min-width: 17px;
+
   padding: 0 4px;
+
   border-radius: 9px;
+
   background: var(--line);
   color: var(--muted);
+
   font-size: 11px;
+
   line-height: 16px;
+
   text-align: center;
 }
 
@@ -140,23 +176,30 @@
 }
 
 .row-browser {
-  overflow: hidden;
   color: var(--dim);
+
   font-size: 11px;
-  white-space: nowrap;
+
   text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  overflow: hidden;
 }
 
 /* Change magnitude, which only exists because pixelmatch gives us a pixel count. */
 .row-change {
   display: flex;
+
+  align-items: center;
   /* Right aligned so the percent signs line up down the column. */
   justify-content: flex-end;
-  align-items: center;
-  gap: 5px;
+
   color: var(--muted);
+
   font-family: var(--mono);
   font-size: 11px;
+  gap: 5px;
   font-variant-numeric: tabular-nums;
 }
 
@@ -166,7 +209,9 @@
   /* Centred against the tick, which is a text glyph sitting on its own baseline. */
   align-items: center;
   justify-content: flex-end;
+
   color: var(--dim);
+
   font-size: 11px;
 }
 
@@ -176,6 +221,7 @@
 
 .row-flags .tick {
   flex: 0 0 auto;
+
   color: var(--added);
 }
 
@@ -184,15 +230,19 @@
  * the shape still takes its colour from whatever it sits in.
  */
 .note {
+  display: inline-block;
   /* Must not shrink: it shares a narrow column with the viewed tick, and a flex item
      with a fixed width will still be squashed without this. */
   flex: 0 0 auto;
-  display: inline-block;
+
   width: 11px;
   height: 11px;
+
   background: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 2h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7.5L4 14.8V12H3a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 2h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7.5L4 14.8V12H3a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 2h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7.5L4 14.8V12H3a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 2h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7.5L4 14.8V12H3a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
 }
 
 .row-flags .note {
@@ -201,27 +251,36 @@
 
 .empty {
   padding: 24px 14px;
+
   color: var(--dim);
+
   text-align: center;
 }
 
 /* Shared by the crumb and the list row, so the same shape means the same thing in
    both places. */
 .warn {
-  flex: 0 0 auto;
   display: inline-block;
+
+  flex: 0 0 auto;
+
   width: 12px;
   height: 12px;
+
   background: currentColor;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8.9 1.5a1 1 0 0 0-1.8 0l-6.8 12A1 1 0 0 0 1.2 15h13.6a1 1 0 0 0 .9-1.5ZM8 5.2c.5 0 .8.4.8.9l-.2 3.4a.6.6 0 0 1-1.2 0l-.2-3.4c0-.5.3-.9.8-.9Zm0 6a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8Z'/%3E%3C/svg%3E") center / contain no-repeat;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8.9 1.5a1 1 0 0 0-1.8 0l-6.8 12A1 1 0 0 0 1.2 15h13.6a1 1 0 0 0 .9-1.5ZM8 5.2c.5 0 .8.4.8.9l-.2 3.4a.6.6 0 0 1-1.2 0l-.2-3.4c0-.5.3-.9.8-.9Zm0 6a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8.9 1.5a1 1 0 0 0-1.8 0l-6.8 12A1 1 0 0 0 1.2 15h13.6a1 1 0 0 0 .9-1.5ZM8 5.2c.5 0 .8.4.8.9l-.2 3.4a.6.6 0 0 1-1.2 0l-.2-3.4c0-.5.3-.9.8-.9Zm0 6a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8Z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8.9 1.5a1 1 0 0 0-1.8 0l-6.8 12A1 1 0 0 0 1.2 15h13.6a1 1 0 0 0 .9-1.5ZM8 5.2c.5 0 .8.4.8.9l-.2 3.4a.6.6 0 0 1-1.2 0l-.2-3.4c0-.5.3-.9.8-.9Zm0 6a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8Z'/%3E%3C/svg%3E")
+    center / contain no-repeat;
 }
 
 .row .warn {
   width: 11px;
   height: 11px;
   margin-inline-end: 5px;
+
   color: var(--removed);
+
   vertical-align: -1px;
 }
 

@@ -192,10 +192,9 @@ export const resolvePullRequest = async (number, cwd) => {
    *
    * Failure is ignored so an offline review still opens on whatever is already here.
    */
-  await git(
-    ['fetch', 'origin', `+refs/heads/${pr.baseRefName}:refs/remotes/origin/${pr.baseRefName}`],
-    cwd
-  ).catch(() => {});
+  await git(['fetch', 'origin', `+refs/heads/${pr.baseRefName}:refs/remotes/origin/${pr.baseRefName}`], cwd).catch(
+    () => {}
+  );
 
   const base = (await resolveRef(`origin/${pr.baseRefName}`, cwd)) ? `origin/${pr.baseRefName}` : pr.baseRefName;
 
@@ -335,6 +334,7 @@ const VIEWED_CHUNK = 50;
  * GitHub asks that a single user's mutations be sent one at a time, so ticking a
  * second directory queues behind the first rather than racing it.
  */
+/** @type {Promise<unknown>} */
 let viewedQueue = Promise.resolve();
 
 /**
@@ -382,8 +382,7 @@ export const setFilesViewed = async ({ number, paths, viewed, cwd }) => {
       const declarations = chunk.map((_, index) => `$p${index}: String!`).join(', ');
       const fields = chunk
         .map(
-          (_, index) =>
-            `f${index}: ${mutation}(input: { pullRequestId: $id, path: $p${index} }) { clientMutationId }`
+          (_, index) => `f${index}: ${mutation}(input: { pullRequestId: $id, path: $p${index} }) { clientMutationId }`
         )
         .join('\n        ');
 
@@ -506,11 +505,15 @@ export const publishComments = async ({ number, comments, cwd, dryRun = false })
   const pullRequestId = JSON.parse(stdout).id;
 
   const { addPullRequestReview } = await graphql(
-    `mutation($pullRequestId: ID!) {
-      addPullRequestReview(input: { pullRequestId: $pullRequestId }) {
-        pullRequestReview { id }
+    `
+      mutation ($pullRequestId: ID!) {
+        addPullRequestReview(input: { pullRequestId: $pullRequestId }) {
+          pullRequestReview {
+            id
+          }
+        }
       }
-    }`,
+    `,
     { pullRequestId }
   );
 
@@ -518,11 +521,13 @@ export const publishComments = async ({ number, comments, cwd, dryRun = false })
 
   const discard = () =>
     graphql(
-      `mutation($pullRequestReviewId: ID!) {
-        deletePullRequestReview(input: { pullRequestReviewId: $pullRequestReviewId }) {
-          clientMutationId
+      `
+        mutation ($pullRequestReviewId: ID!) {
+          deletePullRequestReview(input: { pullRequestReviewId: $pullRequestReviewId }) {
+            clientMutationId
+          }
         }
-      }`,
+      `,
       { pullRequestReviewId }
     ).catch(() => {});
 
@@ -532,18 +537,21 @@ export const publishComments = async ({ number, comments, cwd, dryRun = false })
   try {
     for (const { path, body } of comments) {
       const { addPullRequestReviewThread } = await graphql(
-        `mutation($pullRequestReviewId: ID!, $path: String!, $body: String!) {
-          addPullRequestReviewThread(input: {
-            pullRequestReviewId: $pullRequestReviewId
-            path: $path
-            body: $body
-            subjectType: FILE
-          }) {
-            thread {
-              comments(first: 1) { nodes { id } }
+        `
+          mutation ($pullRequestReviewId: ID!, $path: String!, $body: String!) {
+            addPullRequestReviewThread(
+              input: { pullRequestReviewId: $pullRequestReviewId, path: $path, body: $body, subjectType: FILE }
+            ) {
+              thread {
+                comments(first: 1) {
+                  nodes {
+                    id
+                  }
+                }
+              }
             }
           }
-        }`,
+        `,
         { pullRequestReviewId, path, body }
       );
 
@@ -562,11 +570,15 @@ export const publishComments = async ({ number, comments, cwd, dryRun = false })
   }
 
   const { submitPullRequestReview } = await graphql(
-    `mutation($pullRequestReviewId: ID!) {
-      submitPullRequestReview(input: { pullRequestReviewId: $pullRequestReviewId, event: COMMENT }) {
-        pullRequestReview { url }
+    `
+      mutation ($pullRequestReviewId: ID!) {
+        submitPullRequestReview(input: { pullRequestReviewId: $pullRequestReviewId, event: COMMENT }) {
+          pullRequestReview {
+            url
+          }
+        }
       }
-    }`,
+    `,
     { pullRequestReviewId }
   );
 
@@ -845,7 +857,7 @@ export const buildManifest = async ({ base, head, pathspec = DEFAULT_PATHSPEC, c
       const previous = renamed ? describe(paths[0]) : null;
 
       return {
-        status: status[0],
+        status: /** @type {ManifestFields['status']} */ (status[0]),
         path,
         oldPath: renamed ? paths[0] : null,
         oldGroup: previous?.group ?? null,

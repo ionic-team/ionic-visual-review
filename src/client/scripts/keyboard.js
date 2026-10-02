@@ -12,11 +12,12 @@ import { state } from './state.js';
  */
 export const wireKeyboard = () => {
   document.addEventListener('keydown', (event) => {
-    const typing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName);
+    const target = /** @type {HTMLElement} */ (event.target);
+    const typing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName);
 
     if (event.key === 'Escape') {
       if (typing) {
-        event.target.blur();
+        target.blur();
       }
       return;
     }
@@ -39,10 +40,10 @@ export const wireKeyboard = () => {
         }
       },
       n: nextUnviewed,
-      1: () => dom.modes.children[0].click(),
-      2: () => dom.modes.children[1].click(),
-      3: () => dom.modes.children[2].click(),
-      4: () => dom.modes.children[3].click(),
+      1: () => dom.modes.querySelectorAll('button')[0].click(),
+      2: () => dom.modes.querySelectorAll('button')[1].click(),
+      3: () => dom.modes.querySelectorAll('button')[2].click(),
+      4: () => dom.modes.querySelectorAll('button')[3].click(),
       z: () => {
         state.zoom = ZOOM_ORDER[(ZOOM_ORDER.indexOf(state.zoom) + 1) % ZOOM_ORDER.length];
         applyZoom();

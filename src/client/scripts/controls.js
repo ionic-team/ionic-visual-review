@@ -15,8 +15,9 @@ import { applyTheme } from './theme.js';
  */
 export const wireControls = () => {
   dom.modes.addEventListener('click', (event) => {
-    const mode = event.target.dataset?.mode;
-    if (mode && !event.target.disabled) {
+    const target = /** @type {HTMLButtonElement} */ (event.target);
+    const mode = target.dataset?.mode;
+    if (mode && !target.disabled) {
       state.mode = mode;
       applyMode();
       applyZoom();
@@ -24,7 +25,7 @@ export const wireControls = () => {
   });
 
   dom.zoom.addEventListener('click', (event) => {
-    const zoom = event.target.dataset?.zoom;
+    const zoom = /** @type {HTMLElement} */ (event.target).dataset?.zoom;
     if (zoom) {
       state.zoom = zoom;
       applyZoom();
@@ -32,19 +33,21 @@ export const wireControls = () => {
   });
 
   dom.onion.addEventListener('input', () =>
-    document.documentElement.style.setProperty('--onion', dom.onion.value / 100)
+    document.documentElement.style.setProperty('--onion', String(dom.onion.valueAsNumber / 100))
   );
 
   dom.list.addEventListener('click', (event) => {
-    const row = event.target.closest('.row');
+    /** @type {HTMLElement} */
+    const row = /** @type {Element} */ (event.target).closest('.row');
     if (row) {
       select(row.dataset.path, { scroll: false });
     }
   });
 
   dom.list.addEventListener('change', (event) => {
-    if (event.target.classList.contains('group-box')) {
-      toggleGroup(event.target.closest('.group-head').dataset.group, event.target.checked);
+    const target = /** @type {HTMLInputElement} */ (event.target);
+    if (target.classList.contains('group-box')) {
+      toggleGroup(/** @type {HTMLElement} */ (target.closest('.group-head')).dataset.group, target.checked);
     }
   });
 
@@ -73,12 +76,13 @@ export const wireControls = () => {
   });
 
   dom.facets.addEventListener('click', (event) => {
-    const button = event.target.closest('.count');
+    /** @type {HTMLElement} */
+    const button = /** @type {Element} */ (event.target).closest('.count');
     if (!button) {
       return;
     }
 
-    const selected = state.facets[button.closest('.facet').dataset.facet];
+    const selected = state.facets[/** @type {HTMLElement} */ (button.closest('.facet')).dataset.facet];
     const value = button.dataset.value;
 
     if (selected.has(value)) {
@@ -99,14 +103,14 @@ export const wireControls = () => {
 
   /* Focus would otherwise stay on the checkbox, where the review shortcuts are treated
      as typing and swallowed. */
-  dom.unviewedOnly.addEventListener('change', (event) => {
-    event.target.blur();
+  dom.unviewedOnly.addEventListener('change', () => {
+    dom.unviewedOnly.blur();
     refilter();
   });
 
-  dom.theme.addEventListener('change', (event) => {
-    applyTheme(event.target.value);
-    event.target.blur();
+  dom.theme.addEventListener('change', () => {
+    applyTheme(/** @type {import('./theme.js').Theme} */ (dom.theme.value));
+    dom.theme.blur();
   });
 
   dom.deleteComment.addEventListener('click', deleteCurrentComment);

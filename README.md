@@ -19,18 +19,28 @@ npm start -- --repo ../ionic-framework --pr 31321
 npm start -- --repo ../ionic-framework --base origin/main --head my-branch
 ```
 
-| Option | |
-|---|---|
-| `--repo <path>` | The ionic-framework checkout to review. Defaults to the current directory. |
-| `--pr <number>` | Review a pull request. |
-| `--base <ref>`, `--head <ref>` | Review a range instead of a pull request. |
-| `--path <spec>` | Narrow the set with a git pathspec. |
-| `--port <number>` | Defaults to 4300. |
-| `--no-open` | Don't open a browser. |
+| Option                         |                                                                            |
+| ------------------------------ | -------------------------------------------------------------------------- |
+| `--repo <path>`                | The ionic-framework checkout to review. Defaults to the current directory. |
+| `--pr <number>`                | Review a pull request.                                                     |
+| `--base <ref>`, `--head <ref>` | Review a range instead of a pull request.                                  |
+| `--path <spec>`                | Narrow the set with a git pathspec.                                        |
+| `--port <number>`              | Defaults to 4300.                                                          |
+| `--no-open`                    | Don't open a browser.                                                      |
 
 Press <kbd>?</kbd> in the app for what each marker means and the keyboard shortcuts.
 
 Without a GitHub account the review still works, read-only: comments are hidden and viewed state stays local.
+
+## Linting
+
+```sh
+npm run lint           # ESLint and stylelint, then Prettier formats in place
+npm run lint.fix       # the same, with ESLint and stylelint fixing what they can
+npm run typecheck      # TypeScript checks the JavaScript through its JSDoc types
+```
+
+CI fails if `npm run lint` leaves a diff, so run it before pushing.
 
 ## Testing
 
@@ -42,10 +52,10 @@ npm run test.e2e       # the app in a browser, about three seconds
 
 The end-to-end tests need Playwright's Chromium once: `npx playwright install chromium`.
 
-| Folder | What it covers |
-|---|---|
-| `test/unit` | Pure functions: screenshot name parsing, formatting, browser sets. |
+| Folder             | What it covers                                                          |
+| ------------------ | ----------------------------------------------------------------------- |
+| `test/unit`        | Pure functions: screenshot name parsing, formatting, browser sets.      |
 | `test/integration` | The manifest and the viewed-state store, against a real git repository. |
-| `test/e2e` | The running app: listing, filters, marking viewed. |
+| `test/e2e`         | The running app: listing, filters, marking viewed.                      |
 
 Integration and end-to-end tests build a throwaway repository with one of every kind of change in `test/fixtures/repo.js`. A fake `gh` that always fails is first on `PATH`, so no test can reach GitHub.

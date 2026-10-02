@@ -39,9 +39,7 @@
   /* Behind a screenshot, so a transparent PNG still reads as transparent. */
   --checker-a: #0d1118;
   --checker-b: #0a0d13;
-
   --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
-
   --shot-width: auto;
 }
 
@@ -77,28 +75,28 @@
 
 /* And again for the choice, so it wins whatever the system says. */
 :root[data-theme='light'] {
-    --bg: #ffffff;
-    --panel: #f6f8fa;
-    --raised: #ffffff;
-    --hover: #eef1f4;
-    --line: #d0d7de;
-    --line-soft: #e4e8ed;
-    --text: #1f2328;
-    --muted: #59636e;
-    --dim: #656d76;
-    --on-accent: #ffffff;
-    --accent: #0969da;
-    --accent-soft: #ddf4ff;
-    --accent-tint: rgb(9 105 218 / 0.1);
-    --added: #1a7f37;
-    --added-soft: rgb(26 127 55 / 0.12);
-    --removed: #cf222e;
-    --removed-soft: rgb(207 34 46 / 0.1);
-    --modified: #9a6700;
-    --modified-soft: rgb(154 103 0 / 0.12);
-    --renamed: #8250df;
-    --renamed-soft: rgb(130 80 223 / 0.12);
-    --backdrop: rgb(31 35 40 / 0.4);
-    --checker-a: #eef1f4;
-    --checker-b: #e4e8ed;
+  --bg: #ffffff;
+  --panel: #f6f8fa;
+  --raised: #ffffff;
+  --hover: #eef1f4;
+  --line: #d0d7de;
+  --line-soft: #e4e8ed;
+  --text: #1f2328;
+  --muted: #59636e;
+  --dim: #656d76;
+  --on-accent: #ffffff;
+  --accent: #0969da;
+  --accent-soft: #ddf4ff;
+  --accent-tint: rgb(9 105 218 / 0.1);
+  --added: #1a7f37;
+  --added-soft: rgb(26 127 55 / 0.12);
+  --removed: #cf222e;
+  --removed-soft: rgb(207 34 46 / 0.1);
+  --modified: #9a6700;
+  --modified-soft: rgb(154 103 0 / 0.12);
+  --renamed: #8250df;
+  --renamed-soft: rgb(130 80 223 / 0.12);
+  --backdrop: rgb(31 35 40 / 0.4);
+  --checker-a: #eef1f4;
+  --checker-b: #e4e8ed;
 }

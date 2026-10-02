@@ -52,8 +52,7 @@ export const setViewed = (value, { advance = false } = {}) => {
 
   /* Grouped, the row stands for every browser behind it, so judging the one on screen
      judges the set. */
-  const targets =
-    state.grouped && entry ? setScope(setKeyOf(entry)).map((member) => member.path) : [path];
+  const targets = state.grouped && entry ? setScope(setKeyOf(entry)).map((member) => member.path) : [path];
 
   for (const target of targets) {
     if (value) {
@@ -140,4 +139,8 @@ const setViewedMany = (paths, value) => {
  * @param {string} group
  * @param {boolean} value
  */
-export const toggleGroup = (group, value) => setViewedMany(groupScope(group).map((entry) => entry.path), value);
+export const toggleGroup = (group, value) =>
+  setViewedMany(
+    groupScope(group).map((entry) => entry.path),
+    value
+  );

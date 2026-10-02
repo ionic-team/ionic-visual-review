@@ -2,43 +2,59 @@
 
 .topbar {
   display: flex;
+
   align-items: center;
   gap: 20px;
+
   height: 48px;
+
   padding: 0 14px;
+
   border-bottom: 1px solid var(--line);
+
   background: var(--panel);
 }
 
 .brand {
   display: flex;
+
   align-items: center;
   gap: 9px;
+
   font-weight: 600;
+
   white-space: nowrap;
 }
 
 .mark {
   width: 14px;
   height: 14px;
+
   border-radius: 3px;
+
   background: linear-gradient(135deg, var(--accent), #38d6b0);
 }
 
 .range {
   display: flex;
+
   align-items: baseline;
   gap: 10px;
+
   min-width: 0;
 }
 
 .range a {
   color: var(--text);
+
   font-weight: 500;
+
   text-decoration: none;
-  white-space: nowrap;
-  overflow: hidden;
   text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  overflow: hidden;
 }
 
 .range a:hover {
@@ -47,40 +63,52 @@
 
 .progress {
   display: flex;
+
   align-items: center;
   gap: 10px;
+
   margin-left: auto;
+
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
 .out-of-sync {
   color: var(--modified);
+
   text-decoration: underline dotted;
 }
 
 .progress-track {
   width: 140px;
   height: 4px;
+
   border-radius: 2px;
+
   background: var(--line);
+
   overflow: hidden;
 }
 
 .progress-fill {
   width: 0;
   height: 100%;
-  background: var(--accent);
+
   transition: width 120ms ease-out;
+
+  background: var(--accent);
 }
 
 .ghost {
   width: 26px;
   height: 26px;
+
   border: 1px solid var(--line);
   border-radius: 6px;
+
   background: none;
   color: var(--muted);
+
   cursor: pointer;
 }
 

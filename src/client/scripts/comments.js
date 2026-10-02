@@ -9,7 +9,11 @@ import { persist } from './sync.js';
  * @param {string} path
  * @returns {string}
  */
-export const fileOf = (path) => path.split('/').pop().replace(/\.png$/, '');
+export const fileOf = (path) =>
+  path
+    .split('/')
+    .pop()
+    .replace(/\.png$/, '');
 
 /*
  * A comment arrives as GitHub's rendered markdown, which is somebody else's HTML, so
@@ -21,7 +25,21 @@ export const fileOf = (path) => path.split('/').pop().replace(/\.png$/, '');
  * page fetch it, and the alt text is not worth the request.
  */
 const ALLOWED_TAGS = new Set([
-  'P', 'BR', 'CODE', 'PRE', 'A', 'STRONG', 'EM', 'B', 'I', 'DEL', 'UL', 'OL', 'LI', 'BLOCKQUOTE', 'HR',
+  'P',
+  'BR',
+  'CODE',
+  'PRE',
+  'A',
+  'STRONG',
+  'EM',
+  'B',
+  'I',
+  'DEL',
+  'UL',
+  'OL',
+  'LI',
+  'BLOCKQUOTE',
+  'HR',
 ]);
 
 /**
@@ -158,7 +176,10 @@ export const deleteCurrentComment = async () => {
   const path = state.current;
   const published = state.posted.has(path);
 
-  if (published && !window.confirm(`Delete this comment from pull request #${state.pr}?\n\nIt is removed for everyone.`)) {
+  if (
+    published &&
+    !window.confirm(`Delete this comment from pull request #${state.pr}?\n\nIt is removed for everyone.`)
+  ) {
     return;
   }
 

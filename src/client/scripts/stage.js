@@ -39,7 +39,7 @@ export const applyZoom = () => {
     dom.stage.classList.toggle('upscaled', scale > 1.05);
   }
 
-  for (const button of dom.zoom.children) {
+  for (const button of dom.zoom.querySelectorAll('button')) {
     button.classList.toggle('active', button.dataset.zoom === state.zoom);
   }
 };
@@ -53,7 +53,7 @@ export const applyMode = () => {
   const comparable = worthComparing(entry);
   const mode = comparable ? state.mode : 'sxs';
 
-  for (const button of dom.modes.children) {
+  for (const button of dom.modes.querySelectorAll('button')) {
     button.disabled = COMPARING.has(button.dataset.mode) && !comparable;
     button.classList.toggle('active', button.dataset.mode === mode);
   }
@@ -79,7 +79,7 @@ export const select = (path, { scroll = true } = {}) => {
 
   state.current = path;
 
-  for (const row of dom.list.querySelectorAll('.row')) {
+  for (const row of /** @type {NodeListOf<HTMLElement>} */ (dom.list.querySelectorAll('.row'))) {
     row.classList.toggle('selected', row.dataset.path === path);
   }
   if (scroll) {

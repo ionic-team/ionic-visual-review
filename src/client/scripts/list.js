@@ -40,7 +40,11 @@ const paintRow = (row, entry) => {
   const theirs = kin.some((member) => (state.threads[member.path] ?? []).length > 0);
 
   const tickTitle =
-    kin.length === 1 ? 'Viewed' : seen === kin.length ? `Viewed in all ${kin.length}` : `Viewed in ${seen} of ${kin.length}`;
+    kin.length === 1
+      ? 'Viewed'
+      : seen === kin.length
+        ? `Viewed in all ${kin.length}`
+        : `Viewed in ${seen} of ${kin.length}`;
 
   const flags = [
     `<span class="tick${seen ? '' : ' off'}" title="${tickTitle}">✓</span>`,
@@ -51,7 +55,8 @@ const paintRow = (row, entry) => {
 
   const ratios = kin.map((member) => member.ratio).filter((ratio) => ratio !== null && ratio !== undefined);
   const ratio = ratios.length ? Math.max(...ratios) : null;
-  const change = ratio === null ? '<span class="row-change"></span>' : `<span class="row-change">${percent(ratio)}</span>`;
+  const change =
+    ratio === null ? '<span class="row-change"></span>' : `<span class="row-change">${percent(ratio)}</span>`;
 
   /* Grouped, any browser missing its test makes the whole row worth flagging. */
   const orphaned = kin.some((member) => member.orphaned);
@@ -81,6 +86,7 @@ export const refreshRow = (path) => {
   /* Grouped, the screenshot that changed may not be the one its row is showing, so
      the row is found by the set it belongs to. */
   const member = entryFor(path);
+  /** @type {HTMLElement | null} */
   const row =
     dom.list.querySelector(`.row[data-path="${CSS.escape(path)}"]`) ??
     (state.grouped && member ? dom.list.querySelector(`.row[data-set="${CSS.escape(setKeyOf(member))}"]`) : null);
@@ -100,6 +106,7 @@ const paintGroupHead = (head, group) => {
   const entries = groupScope(group);
   const viewed = countViewed(entries);
 
+  /** @type {HTMLInputElement} */
   const box = head.querySelector('.group-box');
   box.checked = viewed === entries.length;
   box.indeterminate = viewed > 0 && viewed < entries.length;
@@ -111,7 +118,7 @@ const paintGroupHead = (head, group) => {
      filter narrows this, and a tooltip promising "every screenshot" would be wrong
      exactly when it matters. */
   const noun = entries.length === 1 ? 'screenshot' : 'screenshots';
-  head.querySelector('.group-check').title =
+  /** @type {HTMLElement} */ (head.querySelector('.group-check')).title =
     viewed === entries.length
       ? `Unmark ${entries.length} ${noun} listed here`
       : `Mark ${entries.length} ${noun} listed here viewed`;
@@ -141,7 +148,7 @@ const buildGroupHead = (group) => {
 
 /** Repaints every directory head. */
 export const refreshGroupHeads = () => {
-  for (const head of dom.list.querySelectorAll('.group-head')) {
+  for (const head of /** @type {NodeListOf<HTMLElement>} */ (dom.list.querySelectorAll('.group-head'))) {
     paintGroupHead(head, head.dataset.group);
   }
 };
@@ -152,6 +159,7 @@ export const refreshGroupHeads = () => {
  * @param {string} group
  */
 export const refreshGroupHead = (group) => {
+  /** @type {HTMLElement | null} */
   const head = dom.list.querySelector(`.group-head[data-group="${CSS.escape(group)}"]`);
   if (head) {
     paintGroupHead(head, group);

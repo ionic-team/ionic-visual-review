@@ -3,10 +3,12 @@ import { dom } from './dom.js';
 
 const THEME_KEY = 'snapshot-review-theme';
 
+/** @typedef {'system' | 'light' | 'dark'} Theme */
+
 /**
  * Applies a theme and remembers it in this browser. System removes the attribute, so the
  * stylesheet follows the operating system.
- * @param {'system' | 'light' | 'dark'} choice
+ * @param {Theme} choice
  */
 export const applyTheme = (choice) => {
   if (choice === 'system') {
@@ -31,7 +33,7 @@ export const restoreTheme = () => {
     /* Unreadable storage reads as no preference. */
   }
 
-  const choice = ['system', 'light', 'dark'].includes(stored) ? stored : 'system';
+  const choice = /** @type {Theme} */ (['system', 'light', 'dark'].includes(stored) ? stored : 'system');
   dom.theme.value = choice;
   applyTheme(choice);
 };

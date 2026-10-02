@@ -3,9 +3,12 @@
 .crumbs,
 .toolbar {
   display: flex;
+
   align-items: center;
   gap: 12px;
+
   padding: 9px 16px;
+
   border-bottom: 1px solid var(--line-soft);
 }
 
@@ -15,10 +18,14 @@
 
 .badge {
   padding: 2px 7px;
+
   border-radius: 20px;
+
   font-size: 11px;
   font-weight: 600;
+
   letter-spacing: 0.03em;
+
   text-transform: uppercase;
 }
 
@@ -44,9 +51,12 @@
 
 .chip {
   padding: 1px 6px;
+
   border: 1px solid var(--line);
   border-radius: 4px;
+
   color: var(--muted);
+
   font-size: 11px;
 }
 
@@ -56,9 +66,12 @@
 
 .ratio {
   padding: 1px 7px;
+
   border-radius: 4px;
+
   background: var(--modified-soft);
   color: var(--modified);
+
   font-family: var(--mono);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
@@ -73,13 +86,16 @@
 /* Reads as part of the path it follows, not as a button. */
 .test-link {
   color: var(--dim);
+
   font-family: var(--mono);
   font-size: 12px;
+
   text-decoration: none;
 }
 
 .test-link:hover {
   color: var(--accent);
+
   text-decoration: underline;
 }
 
@@ -89,9 +105,12 @@
 
 .renamed-from {
   padding: 1px 6px;
+
   border-radius: 4px;
+
   background: var(--renamed-soft);
   color: var(--renamed);
+
   font-family: var(--mono);
   font-size: 11px;
 }
@@ -102,9 +121,12 @@
 
 .resize {
   padding: 1px 7px;
+
   border-radius: 4px;
+
   background: var(--accent-tint);
   color: var(--accent);
+
   font-family: var(--mono);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
@@ -116,19 +138,25 @@
 
 .segmented {
   display: inline-flex;
+
   border: 1px solid var(--line);
   border-radius: 7px;
+
   overflow: hidden;
 }
 
 .segmented button {
   padding: 5px 11px;
+
   border: none;
   border-right: 1px solid var(--line);
+
   background: none;
   color: var(--muted);
-  cursor: pointer;
+
   white-space: nowrap;
+
+  cursor: pointer;
 }
 
 .segmented button:last-child {
@@ -151,14 +179,18 @@
 
 .segmented.small button {
   padding: 4px 9px;
+
   font-size: 11px;
 }
 
 .range-control {
   display: none;
+
   align-items: center;
   gap: 8px;
+
   color: var(--muted);
+
   font-size: 11px;
 }
 
@@ -173,9 +205,12 @@
 
 .outdated {
   padding: 1px 6px;
+
   border-radius: 4px;
+
   background: var(--modified-soft);
   color: var(--modified);
+
   font-size: 11px;
 }
 
@@ -188,8 +223,11 @@
 .orphan {
   display: inline-flex;
   gap: 5px;
+
   align-items: center;
+
   color: var(--removed);
+
   font-size: 11px;
   font-weight: 600;
   /* Kept on one line: wrapped, it read as two fragments rather than one warning. */

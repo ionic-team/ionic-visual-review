@@ -2,17 +2,24 @@
 
 .sidebar {
   display: flex;
+
   flex-direction: column;
+
   min-height: 0;
+
   border-right: 1px solid var(--line);
+
   background: var(--panel);
 }
 
 .controls {
   display: flex;
+
   flex-direction: column;
   gap: 8px;
+
   padding: 10px;
+
   border-bottom: 1px solid var(--line-soft);
 }
 
@@ -27,10 +34,14 @@
 
 .facets {
   display: flex;
+
   flex-direction: column;
   gap: 1px;
+
   padding: 5px 8px 6px;
+
   border-bottom: 1px solid var(--line-soft);
+
   color: var(--muted);
 }
 
@@ -41,29 +52,38 @@
   /* Wide enough for "direction", the longest facet name. */
   grid-template-columns: 64px 1fr;
   gap: 4px;
+
   align-items: start;
 }
 
 .facet-name {
   padding-top: 4px;
-  overflow: hidden;
+
   color: var(--dim);
+
   text-overflow: ellipsis;
+
+  overflow: hidden;
 }
 
 .facet-chips {
   display: flex;
+
   flex-wrap: wrap;
   gap: 4px;
 }
 
 .count {
   padding: 3px 7px;
+
   border: 1px solid transparent;
   border-radius: 5px;
+
   background: transparent;
   color: inherit;
+
   font: inherit;
+
   cursor: pointer;
 }
 
@@ -74,11 +94,13 @@
 
 .count:hover {
   border-color: var(--line);
+
   color: var(--text);
 }
 
 .count.active {
   border-color: transparent;
+
   background: var(--accent-soft);
   color: var(--accent);
 }
@@ -95,10 +117,14 @@
 
 .carried {
   margin: 0;
+
   padding: 7px 12px;
+
   border-bottom: 1px solid var(--line-soft);
+
   background: var(--accent-soft);
   color: var(--accent);
+
   font-size: 11px;
 }
 
@@ -108,10 +134,14 @@
 
 .pushed {
   margin: 0;
+
   padding: 7px 12px;
+
   border-bottom: 1px solid var(--line-soft);
+
   background: var(--accent-soft);
   color: var(--accent);
+
   font-size: 11px;
 }
 
@@ -123,11 +153,15 @@
 
 .refresh {
   padding: 1px 8px;
+
   border: 1px solid currentColor;
   border-radius: 4px;
+
   background: transparent;
   color: inherit;
+
   font: inherit;
+
   cursor: pointer;
 }
 
@@ -138,12 +172,14 @@
  */
 .refresh:hover:not(:disabled) {
   border-color: var(--accent);
+
   background: var(--accent);
   color: var(--bg);
 }
 
 .pushed.urgent .refresh:hover:not(:disabled) {
   border-color: var(--modified);
+
   background: var(--modified);
 }
 
