@@ -1,0 +1,239 @@
+/* Above the stage: crumbs, flags, and the view and zoom controls. */
+
+.crumbs,
+.toolbar {
+  display: flex;
+
+  align-items: center;
+  gap: 12px;
+
+  padding: 9px 16px;
+
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.toolbar {
+  background: var(--panel);
+}
+
+.badge {
+  padding: 2px 7px;
+
+  border-radius: 20px;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  letter-spacing: 0.03em;
+
+  text-transform: uppercase;
+}
+
+.badge.M {
+  background: var(--modified-soft);
+  color: var(--modified);
+}
+
+.badge.A {
+  background: var(--added-soft);
+  color: var(--added);
+}
+
+.badge.D {
+  background: var(--removed-soft);
+  color: var(--removed);
+}
+
+.badge.R {
+  background: var(--renamed-soft);
+  color: var(--renamed);
+}
+
+.chip {
+  padding: 1px 6px;
+
+  border: 1px solid var(--line);
+  border-radius: 4px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+}
+
+.chip:empty {
+  display: none;
+}
+
+.ratio {
+  padding: 1px 7px;
+
+  border-radius: 4px;
+
+  background: var(--modified-soft);
+  color: var(--modified);
+
+  font-family: var(--mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ratio:empty {
+  display: none;
+}
+
+/* Flags a pair whose dimensions changed, which is information neither GitHub nor a
+   plain overlay surfaces. */
+/* Reads as part of the path it follows, not as a button. */
+.test-link {
+  color: var(--dim);
+
+  font-family: var(--mono);
+  font-size: 12px;
+
+  text-decoration: none;
+}
+
+.test-link:hover {
+  color: var(--accent);
+
+  text-decoration: underline;
+}
+
+.test-link[hidden] {
+  display: none;
+}
+
+.renamed-from {
+  padding: 1px 6px;
+
+  border-radius: 4px;
+
+  background: var(--renamed-soft);
+  color: var(--renamed);
+
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.renamed-from[hidden] {
+  display: none;
+}
+
+.resize {
+  padding: 1px 7px;
+
+  border-radius: 4px;
+
+  background: var(--accent-tint);
+  color: var(--accent);
+
+  font-family: var(--mono);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.resize:empty {
+  display: none;
+}
+
+.segmented {
+  display: inline-flex;
+
+  border: 1px solid var(--line);
+  border-radius: 7px;
+
+  overflow: hidden;
+}
+
+.segmented button {
+  padding: 5px 11px;
+
+  border: none;
+  border-right: 1px solid var(--line);
+
+  background: none;
+  color: var(--muted);
+
+  white-space: nowrap;
+
+  cursor: pointer;
+}
+
+.segmented button:last-child {
+  border-right: none;
+}
+
+.segmented button:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.segmented button.active {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.segmented button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.segmented.small button {
+  padding: 4px 9px;
+
+  font-size: 11px;
+}
+
+.range-control {
+  display: none;
+
+  align-items: center;
+  gap: 8px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+}
+
+.range-control.show {
+  display: flex;
+}
+
+.range-control input {
+  width: 110px;
+  accent-color: var(--accent);
+}
+
+.outdated {
+  padding: 1px 6px;
+
+  border-radius: 4px;
+
+  background: var(--modified-soft);
+  color: var(--modified);
+
+  font-size: 11px;
+}
+
+.outdated[hidden] {
+  display: none;
+}
+
+/* A screenshot with no spec behind it. Stated in words rather than as a badge, because
+   a badge among other badges was read as just more metadata and skipped. */
+.orphan {
+  display: inline-flex;
+  gap: 5px;
+
+  align-items: center;
+
+  color: var(--removed);
+
+  font-size: 11px;
+  font-weight: 600;
+  /* Kept on one line: wrapped, it read as two fragments rather than one warning. */
+  white-space: nowrap;
+}
+
+.orphan[hidden] {
+  display: none;
+}

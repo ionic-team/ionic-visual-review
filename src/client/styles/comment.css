@@ -1,0 +1,249 @@
+/* Comment box, teammate threads, and the publish and delete buttons. */
+
+.delete-comment {
+  margin-left: auto;
+
+  padding: 1px 8px;
+
+  border: 1px solid var(--line);
+  border-radius: 4px;
+
+  background: transparent;
+  color: var(--muted);
+
+  font: inherit;
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.delete-comment:hover:not(:disabled) {
+  border-color: var(--removed);
+
+  color: var(--removed);
+}
+
+.delete-comment[hidden] {
+  display: none;
+}
+
+.publish {
+  padding: 3px 10px;
+
+  border: 1px solid var(--accent);
+  border-radius: 5px;
+
+  background: var(--accent-soft);
+  color: var(--accent);
+
+  font: inherit;
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.publish:hover:not(:disabled) {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.publish:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.publish[hidden] {
+  display: none;
+}
+
+.comment {
+  padding: 10px 16px 12px;
+
+  border-top: 1px solid var(--line);
+
+  background: var(--panel);
+}
+
+.comment-head {
+  display: flex;
+
+  align-items: baseline;
+  justify-content: space-between;
+
+  margin-bottom: 6px;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  font-weight: 500;
+  /* An explicit gap, because the delete button's auto margin swallows the free space
+     that space-between would otherwise distribute, leaving the label and the status
+     touching the moment that button appears. */
+  gap: 10px;
+}
+
+.threads {
+  display: flex;
+
+  flex-direction: column;
+  /* Room for a question and its answer without scrolling, which is the common shape.
+     Anything longer scrolls rather than pushing the comment box off screen. */
+  max-height: 230px;
+
+  margin-bottom: 8px;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.threads[hidden] {
+  display: none;
+}
+
+.thread {
+  padding: 6px 9px;
+
+  border-left: 2px solid var(--accent);
+  border-radius: 0 5px 5px 0;
+
+  background: var(--panel);
+}
+
+.threads-count {
+  margin: 0;
+
+  color: var(--dim);
+
+  font-size: 11px;
+}
+
+.thread-comment + .thread-comment {
+  margin-top: 6px;
+
+  padding-top: 6px;
+
+  border-top: 1px solid var(--line-soft);
+}
+
+/* A reply is indented so a two-sided exchange reads as one conversation rather than
+   two opinions of equal standing. */
+.thread-comment.is-reply {
+  padding-left: 10px;
+}
+
+.thread-tag {
+  color: var(--dim);
+
+  font-size: 11px;
+}
+
+.thread.is-resolved {
+  border-left-color: var(--line);
+
+  opacity: 0.6;
+}
+
+.thread-author {
+  color: var(--accent);
+
+  font-size: 11px;
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+.thread-author:hover {
+  text-decoration: underline;
+}
+
+.thread-body {
+  margin: 3px 0 0;
+
+  color: var(--muted);
+
+  font-size: 11px;
+}
+
+.thread-body p {
+  margin: 0 0 4px;
+}
+
+.thread-body p:last-child {
+  margin-bottom: 0;
+}
+
+.thread-body code {
+  padding: 1px 4px;
+
+  border-radius: 4px;
+
+  background: var(--line-soft);
+  color: var(--text);
+
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.thread-body pre {
+  margin: 4px 0;
+
+  padding: 7px 9px;
+
+  border-radius: 5px;
+
+  background: var(--line-soft);
+  overflow-x: auto;
+}
+
+.thread-body pre code {
+  padding: 0;
+
+  background: none;
+}
+
+.thread-body a {
+  color: var(--accent);
+  /* Comment links are often long commit or preview URLs, and one of them should not
+     push the panel wider than the screenshot it is about. */
+  overflow-wrap: anywhere;
+}
+
+.thread-body ul,
+.thread-body ol {
+  margin: 4px 0;
+
+  padding-left: 18px;
+}
+
+.thread-body blockquote {
+  margin: 4px 0;
+
+  padding-left: 8px;
+
+  border-left: 2px solid var(--line);
+
+  color: var(--dim);
+}
+
+.comment textarea {
+  width: 100%;
+
+  padding: 8px 10px;
+
+  border: 1px solid var(--line);
+  border-radius: 6px;
+
+  outline: none;
+
+  background: var(--bg);
+
+  font-family: inherit;
+  resize: vertical;
+}
+
+.comment textarea.stale {
+  border-color: var(--modified);
+}
+
+.comment textarea:focus {
+  border-color: var(--accent);
+}
