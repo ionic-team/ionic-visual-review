@@ -48,6 +48,8 @@ export const state = {
   /* Comments that are on the pull request right now. */
   posted: new Set(),
   pr: null,
+  /* OPEN, CLOSED or MERGED. Only an open pull request takes new comments. */
+  prState: null,
   /* The GitHub account gh is logged in as, or null when it has none. */
   viewer: null,
   /* Every screenshot in a directory, keyed by directory. */

@@ -75,6 +75,7 @@ import {
  * @property {string} head
  * @property {string} label Shown in the header and the startup banner.
  * @property {string | null} url The pull request, when there is one.
+ * @property {'OPEN' | 'CLOSED' | 'MERGED' | null} prState
  */
 
 /**
@@ -206,7 +207,13 @@ const readArgs = () => {
 const resolveRange = async (args, cwd) => {
   if (args.pr) {
     const { base, head, pr } = await resolvePullRequest(args.pr, cwd);
-    return { base: args.base ?? base, head: args.head ?? head, label: `#${args.pr} ${pr.title}`, url: pr.url };
+    return {
+      base: args.base ?? base,
+      head: args.head ?? head,
+      label: `#${args.pr} ${pr.title}`,
+      url: pr.url,
+      prState: pr.state,
+    };
   }
 
   if (!args.base || !args.head) {
@@ -219,7 +226,7 @@ const resolveRange = async (args, cwd) => {
     }
   }
 
-  return { base: args.base, head: args.head, label: `${args.base}...${args.head}`, url: null };
+  return { base: args.base, head: args.head, label: `${args.base}...${args.head}`, url: null, prState: null };
 };
 
 /**
@@ -1011,6 +1018,7 @@ export const main = async () => {
             range: { ...range, mergeBase: review.mergeBase, pathspec },
             /* The client hides the publish control without one. */
             pr: args.pr ?? null,
+            prState: range.prState,
             viewer,
             blobBase: review.blobBase,
             threads: review.threads,

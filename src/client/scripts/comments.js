@@ -222,8 +222,14 @@ export const deleteCurrentComment = async () => {
  */
 export const renderPublish = () => {
   const count = state.unsent.size;
+  /* Comments still save here; posting them would land on a pull request nobody is
+     reviewing any more. */
+  const settled = state.prState === 'MERGED' || state.prState === 'CLOSED';
   dom.publish.hidden = !state.pr || !state.viewer || count === 0;
-  dom.publish.disabled = false;
+  dom.publish.disabled = settled;
+  dom.publish.title = settled
+    ? `#${state.pr} is ${state.prState.toLowerCase()}, so comments can't be posted to it`
+    : '';
   dom.publish.textContent = `Post ${count} comment${count === 1 ? '' : 's'} to #${state.pr}`;
 };
 

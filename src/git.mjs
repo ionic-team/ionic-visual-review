@@ -9,6 +9,7 @@ import { promisify } from 'node:util';
  * @property {string} title
  * @property {string} url
  * @property {boolean} isCrossRepository
+ * @property {'OPEN' | 'CLOSED' | 'MERGED'} state
  */
 
 /**
@@ -155,6 +156,7 @@ const restPullRequest = async (number, cwd) => {
     title: body.title,
     url: body.html_url,
     isCrossRepository: body.head.repo?.full_name !== body.base.repo?.full_name,
+    state: body.merged_at ? 'MERGED' : body.state === 'closed' ? 'CLOSED' : 'OPEN',
   };
 };
 
@@ -171,7 +173,13 @@ export const resolvePullRequest = async (number, cwd) => {
         (
           await execFileAsync(
             'gh',
-            ['pr', 'view', String(number), '--json', 'baseRefName,headRefOid,headRefName,title,url,isCrossRepository'],
+            [
+              'pr',
+              'view',
+              String(number),
+              '--json',
+              'baseRefName,headRefOid,headRefName,title,url,isCrossRepository,state',
+            ],
             { cwd, maxBuffer: MAX_BUFFER }
           )
         ).stdout

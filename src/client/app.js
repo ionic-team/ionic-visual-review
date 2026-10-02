@@ -35,6 +35,7 @@ const init = async () => {
   state.posted = new Set(manifest.state.posted ?? []);
   state.threads = manifest.threads ?? {};
   state.pr = manifest.pr ?? null;
+  state.prState = manifest.prState ?? null;
   state.viewer = manifest.viewer ?? null;
 
   /* A comment exists to be posted on a pull request. Without one, or without an account
