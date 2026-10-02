@@ -18,7 +18,7 @@
     "lint.css.fix": "npm run lint.css -- --fix",
     "lint.js": "npm run eslint",
     "lint.js.fix": "npm run eslint -- --fix",
-    "prettier": "prettier \"./**/*.{html,js,mjs,css,md}\"",
+    "prettier": "prettier \"./**/*.{html,js,mjs,css}\"",
     "test": "npm run test.spec && npm run test.e2e",
     "test.spec": "node --test 'test/unit/**/*.test.js' 'test/integration/**/*.test.js'",
     "test.e2e": "npx playwright test",

@@ -16,6 +16,3 @@ Issue URL:
 
 
 ## Other information
-
-
-
