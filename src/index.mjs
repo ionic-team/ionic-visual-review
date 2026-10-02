@@ -14,9 +14,9 @@
  * one, because Playwright writes a screenshot per browser project and reviewing all
  * three of a set is redundant when only one of them is read.
  *
- * Usage, from inside an ionic-framework checkout or pointing at one with --repo:
+ * Usage, with ionic-framework cloned next to this repository or named with --repo:
  *   npm start -- --pr 31321
- *   npm start -- --repo ../ionic-framework --pr 31321
+ *   npm start -- --repo ~/code/ionic-framework --pr 31321
  *   npm start -- --base origin/main --head my-branch
  *   npm start -- --pr 31321 --path ':(top)core/src/components/textarea/**\/*.png'
  */
@@ -24,9 +24,12 @@ import { execFile } from 'node:child_process';
 import { readFile, mkdir, readdir, rm, stat, utimes, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { createRequire } from 'node:module';
-import { dirname, join } from 'node:path';
+import { homedir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
+import { stdin, stdout } from 'node:process';
+import { createInterface } from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
-import { parseArgs } from 'node:util';
+import { parseArgs, styleText } from 'node:util';
 import sirv from 'sirv';
 
 import { comparePng, pngSize } from './diff.mjs';
@@ -149,11 +152,21 @@ const CLIENT_DIR = join(HERE, 'client');
 const SLIDER_PKG = join(dirname(createRequire(import.meta.url).resolve('img-comparison-slider/package.json')), 'dist');
 const DEFAULT_PORT = 4300;
 
+/* Yellow only on a terminal, since styleText checks stdout before colouring. */
+const NO_ACCOUNT = styleText(
+  'yellow',
+  [
+    '  ⚠ Not signed in to GitHub. Run gh auth login, then restart.',
+    "    The review works, but comments can't be posted and viewed marks stay local.",
+  ].join('\n')
+);
+
 const usage = `
 Review screenshot diffs locally.
 
-  --repo <path>     The ionic-framework checkout to review. Defaults to the
-                    current directory.
+  --repo <path>     The ionic-framework checkout to review. Defaults to
+                    ../ionic-framework next to the reviewer, and asks
+                    when that is missing.
   --pr <number>     Review a pull request.
   --base <ref>      Compare from this ref instead of a pull request base.
   --head <ref>      Compare to this ref.
@@ -774,6 +787,66 @@ const buildReview = async ({ args, viewer, range, pathspec, cwd, reader }) => {
   };
 };
 
+/**
+ * Finds the checkout to review: `--repo`, else ionic-framework cloned next to the
+ * reviewer, else whatever path the developer types in.
+ * @param {Args} args
+ * @returns {Promise<string>} The checkout's root.
+ */
+const findRepo = async (args) => {
+  const reviewer = await repoRoot(HERE).catch(() => null);
+  /** @param {string} path */
+  const check = async (path) => {
+    const root = await repoRoot(path).catch(() => null);
+    if (!root) {
+      return { error: `Not a git repository: ${path}` };
+    }
+    if (root === reviewer) {
+      return { error: 'That is the reviewer itself, not ionic-framework' };
+    }
+    return { root };
+  };
+
+  if (args.repo) {
+    const { root, error } = await check(args.repo);
+    if (error) {
+      throw new Error(`${error}. Pass --repo <path to ionic-framework>.`);
+    }
+    return root;
+  }
+
+  const { root: sibling } = await check(join(dirname(HERE), '..', 'ionic-framework'));
+  if (sibling) {
+    return sibling;
+  }
+
+  if (!stdin.isTTY) {
+    throw new Error('No ionic-framework next to the reviewer. Pass --repo <path to ionic-framework>.');
+  }
+
+  /* Pasted or dragged in, a path can arrive quoted, and the shell is not there to
+     expand a leading ~. */
+  const prompt = createInterface({ input: stdin, output: stdout });
+  try {
+    stdout.write('\n  No ionic-framework found next to the reviewer.\n');
+    for (;;) {
+      const answer = (await prompt.question('  Path to your ionic-framework checkout: '))
+        .trim()
+        .replace(/^(['"])(.*)\1$/, '$2')
+        .replace(/^~(?=$|\/)/, homedir());
+      if (answer) {
+        const { root, error } = await check(resolve(answer));
+        if (root) {
+          return root;
+        }
+        stdout.write(`  ${error}\n`);
+      }
+    }
+  } finally {
+    prompt.close();
+  }
+};
+
 /** Parses the arguments, builds the review and serves it until interrupted. */
 export const main = async () => {
   const args = readArgs();
@@ -782,24 +855,15 @@ export const main = async () => {
     return;
   }
 
-  /* The reviewer and the repository it reviews are separate checkouts, so the one
-     under review is named rather than assumed to be wherever this was started. */
-  const cwd = await repoRoot(args.repo ?? process.cwd()).catch(() => {
-    throw new Error(`Not a git repository: ${args.repo ?? process.cwd()}. Pass --repo <path to ionic-framework>.`);
-  });
-
-  /* Started from this repository's own folder, the review would look for the pull
-     request here and fail with an error that does not say why. */
-  if (cwd === (await repoRoot(HERE).catch(() => null))) {
-    throw new Error(
-      'This is the reviewer itself. Pass --repo <path to ionic-framework>, e.g. --repo ../ionic-framework.'
-    );
-  }
+  const cwd = await findRepo(args);
 
   /* Writing to a pull request is done as whoever gh is logged in as. With no account
      there is nobody to post as, so the review runs read-only rather than failing on
      each attempt. */
   const viewer = await authenticatedUser(cwd);
+  if (args.pr && !viewer) {
+    process.stdout.write(`\n${NO_ACCOUNT}\n`);
+  }
 
   let range = await resolveRange(args, cwd);
   const pathspec = args.path ?? DEFAULT_PATHSPEC;
@@ -1023,9 +1087,6 @@ export const main = async () => {
         ? [`  ${Object.keys(review.threads).length} screenshots already have review comments`]
         : []),
       ...(review.pruned ? [`  ${review.pruned} stale cache ${review.pruned === 1 ? 'entry' : 'entries'} removed`] : []),
-      ...(args.pr && !viewer
-        ? ['  No GitHub account, so comments and viewed state stay local. Run gh auth login.']
-        : []),
       ...(orphaned.length
         ? [
             `  ${orphaned.length} with no test, in ${new Set(orphaned.map((entry) => entry.group)).size} ` +
@@ -1034,6 +1095,7 @@ export const main = async () => {
           ]
         : []),
       ``,
+      ...(args.pr && !viewer ? [NO_ACCOUNT, ``] : []),
       `  ${address}`,
       ``,
     ].join('\n')

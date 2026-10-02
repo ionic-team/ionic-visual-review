@@ -12,21 +12,22 @@ npm install
 
 ## Usage
 
-Point it at your ionic-framework clone with `--repo`, or run it from inside the clone and leave `--repo` off.
+Clone ionic-framework next to this repository and it is found on its own. Otherwise name it with `--repo`, or start without it and type the path when asked.
 
 ```sh
-npm start -- --repo ../ionic-framework --pr 31321
-npm start -- --repo ../ionic-framework --base origin/main --head my-branch
+npm start -- --pr 31321
+npm start -- --base origin/main --head my-branch
+npm start -- --repo ~/code/ionic-framework --pr 31321
 ```
 
-| Option                         |                                                                            |
-| ------------------------------ | -------------------------------------------------------------------------- |
-| `--repo <path>`                | The ionic-framework checkout to review. Defaults to the current directory. |
-| `--pr <number>`                | Review a pull request.                                                     |
-| `--base <ref>`, `--head <ref>` | Review a range instead of a pull request.                                  |
-| `--path <spec>`                | Narrow the set with a git pathspec.                                        |
-| `--port <number>`              | Defaults to 4300.                                                          |
-| `--no-open`                    | Don't open a browser.                                                      |
+| Option                         |                                                                           |
+| ------------------------------ | ------------------------------------------------------------------------- |
+| `--repo <path>`                | The ionic-framework checkout to review. Defaults to `../ionic-framework`. |
+| `--pr <number>`                | Review a pull request.                                                    |
+| `--base <ref>`, `--head <ref>` | Review a range instead of a pull request.                                 |
+| `--path <spec>`                | Narrow the set with a git pathspec.                                       |
+| `--port <number>`              | Defaults to 4300.                                                         |
+| `--no-open`                    | Don't open a browser.                                                     |
 
 Press <kbd>?</kbd> in the app for what each marker means and the keyboard shortcuts.
 
