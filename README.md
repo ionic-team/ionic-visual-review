@@ -33,6 +33,15 @@ Press <kbd>?</kbd> in the app for what each marker means and the keyboard shortc
 
 Without a GitHub account the review still works, read-only: comments are hidden and viewed state stays local.
 
+### Why it needs a local clone
+
+The clone is where everything is read from:
+
+- **Images** come out of git's object store, about 4,000 for a large sync in a second, with no checkout and no network. GitHub's API would mean thousands of downloads, and allows 60 an hour without an account.
+- **The changes** come from one `git diff`, renames included. GitHub's pull request file list stops at 3,000 files.
+- **Test links and orphans** come from reading the specs at the commit under review.
+- **Review progress and the diff cache** are kept in the clone's `.git/snapshot-review/`.
+
 ## Linting
 
 ```sh
