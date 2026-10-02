@@ -658,8 +658,14 @@ const readBody = (req) =>
  */
 const listen = (server, port) =>
   new Promise((resolve, reject) => {
-    const onError = (error) => {
+    const onListening = () => {
       server.removeListener('error', onError);
+      resolve(port);
+    };
+    /* A failed attempt's listener has to go too, or it fires when the next port
+       succeeds and reports the busy one. */
+    const onError = (error) => {
+      server.removeListener('listening', onListening);
       if (error.code === 'EADDRINUSE' && port < DEFAULT_PORT + 20) {
         listen(server, port + 1).then(resolve, reject);
       } else {
@@ -667,10 +673,8 @@ const listen = (server, port) =>
       }
     };
     server.once('error', onError);
-    server.listen(port, '127.0.0.1', () => {
-      server.removeListener('error', onError);
-      resolve(port);
-    });
+    server.once('listening', onListening);
+    server.listen(port, '127.0.0.1');
   });
 
 const CACHE_TTL_DAYS = 14;
