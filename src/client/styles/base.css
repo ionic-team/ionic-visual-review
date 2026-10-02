@@ -1,0 +1,98 @@
+/* Reset, shared utilities, form controls and the page skeleton. */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+/*
+ * No font smoothing override. Antialiased is the reflex on a dark theme and it is
+ * the wrong one: it thins light text on a dark background, which is already the
+ * direction the eye errs. The default rendering is what keeps this legible at 11px.
+ */
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  overflow: hidden;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+.dim {
+  color: var(--dim);
+}
+
+.strong {
+  font-weight: 500;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  height: calc(100% - 48px);
+}
+
+.field {
+  width: 100%;
+  padding: 6px 9px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+  outline: none;
+}
+
+.field:focus {
+  border-color: var(--accent);
+}
+
+.field-select {
+  width: auto;
+  margin-left: auto;
+  padding: 4px 6px;
+  font-size: 11px;
+}
+
+/* Beats the class rule below, which would otherwise keep a hidden checkbox visible. */
+.check[hidden] {
+  display: none;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.check input {
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}

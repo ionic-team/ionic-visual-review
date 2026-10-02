@@ -1,0 +1,37 @@
+/* Light, dark and system theme. */
+import { dom } from './dom.js';
+
+const THEME_KEY = 'snapshot-review-theme';
+
+/**
+ * Applies a theme and remembers it in this browser. System removes the attribute, so the
+ * stylesheet follows the operating system.
+ * @param {'system' | 'light' | 'dark'} choice
+ */
+export const applyTheme = (choice) => {
+  if (choice === 'system') {
+    document.documentElement.removeAttribute('data-theme');
+  } else {
+    document.documentElement.dataset.theme = choice;
+  }
+
+  try {
+    localStorage.setItem(THEME_KEY, choice);
+  } catch {
+    /* Private windows and blocked storage. The choice still applies for this page. */
+  }
+};
+
+/** Applies the remembered theme, or system when there is none. */
+export const restoreTheme = () => {
+  let stored = 'system';
+  try {
+    stored = localStorage.getItem(THEME_KEY) ?? 'system';
+  } catch {
+    /* Unreadable storage reads as no preference. */
+  }
+
+  const choice = ['system', 'light', 'dark'].includes(stored) ? stored : 'system';
+  dom.theme.value = choice;
+  applyTheme(choice);
+};

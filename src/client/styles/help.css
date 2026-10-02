@@ -1,0 +1,132 @@
+/* Help dialog and key caps. */
+
+.help {
+  /* Two columns of readable measure. At 340px in one column almost every line
+     wrapped, which is what made a short reference feel like a wall. */
+  width: min(560px, calc(100vw - 48px));
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
+  padding: 20px 24px 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--raised);
+  color: var(--text);
+}
+
+.help::backdrop {
+  background: var(--backdrop);
+}
+
+/* Each heading opens a section, so it needs room above it. The first does not, since
+   the dialog's own padding already provides that. */
+/* One column, wide enough that a bullet is a line rather than a paragraph. Splitting
+   into two at this width gave each side barely more measure than the old 340px, so
+   the text wrapped just as hard and only the shape changed.
+   flow-root stops a section swallowing its first heading's top margin. */
+.help-columns > h2:first-child {
+  margin-top: 0;
+}
+
+.help h2 {
+  margin: 26px 0 12px;
+  font-size: 13px;
+}
+
+.help dl {
+  display: grid;
+  /* Wide enough for four key caps side by side. */
+  grid-template-columns: 104px 1fr;
+  gap: 6px 12px;
+  margin: 0;
+}
+
+.help dt {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+
+/* Key caps. The heavier bottom border is what reads as depth without a shadow. */
+.help kbd {
+  min-width: 20px;
+  padding: 2px 5px 1px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.help .key-sep {
+  color: var(--dim);
+  font-size: 10px;
+}
+
+.help dd {
+  margin: 0;
+  color: var(--muted);
+}
+
+/*
+ * The legend shows the real markers rather than naming their colours. A swatch is an
+ * inline span, so it needs blockifying here; in the list it is a grid item and gets
+ * that for free.
+ */
+.help .legend dt {
+  display: flex;
+  align-items: center;
+  min-height: 18px;
+}
+
+/* The keyboard column is sized for "1 - 4" and "Esc". A swatch needs far less, and
+   at the wider width the markers drifted away from what they describe. */
+.help .legend {
+  grid-template-columns: 32px 1fr;
+}
+
+.help .legend .dot {
+  display: inline-block;
+}
+
+.help .legend .tick {
+  color: var(--added);
+}
+
+.help .legend .note {
+  color: var(--accent);
+}
+
+/* Body copy in the dialog is all one colour. The bullet sections were carrying the
+   dim class, which is a good deal darker than the definition lists beside them. */
+.help ul {
+  margin: 14px 0 0;
+  padding-left: 16px;
+  color: var(--muted);
+}
+
+.help li {
+  margin-bottom: 4px;
+}
+
+.help li b {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-weight: 400;
+}
+
+.help p {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  /* The soft line is nearly the same value as this dialog's background. The dialog's
+     own border is what a rule on top of it has to match. */
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+}
