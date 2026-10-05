@@ -4,7 +4,9 @@ Review Playwright snapshot changes for Ionic Framework pull requests. GitHub's F
 
 ## Setup
 
-Requires Node 24 or later, a local clone of [ionic-framework](https://github.com/ionic-team/ionic-framework), and the [GitHub CLI](https://cli.github.com) signed in with `gh auth login`.
+Requires Node 24 or later and a local clone of [ionic-framework](https://github.com/ionic-team/ionic-framework).
+
+The [GitHub CLI](https://cli.github.com), signed in with `gh auth login`, is optional. It adds teammates' comments, posting comments and syncing viewed marks to the pull request. Without it, pull requests still open read-only and viewed marks stay local.
 
 ```sh
 npm install
@@ -12,7 +14,7 @@ npm install
 
 ## Usage
 
-Clone ionic-framework next to this repository and it is found on its own. Otherwise name it with `--repo`, or start without it and type the path when asked.
+The reviewer looks for ionic-framework next to this repository first. If your clone is somewhere else, pass `--repo`, or start without it and type the path when asked.
 
 ```sh
 npm start -- --pr 31321
@@ -30,8 +32,6 @@ npm start -- --repo ~/code/ionic-framework --pr 31321
 | `--no-open`                    | Don't open a browser.                                                     |
 
 Press <kbd>?</kbd> in the app for what each marker means and the keyboard shortcuts.
-
-Without a GitHub account the review still works, read-only: comments are hidden and viewed state stays local.
 
 ### Why it needs a local clone
 
