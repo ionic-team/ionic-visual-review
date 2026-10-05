@@ -91,7 +91,7 @@
 }
 
 /*
- * The legend shows the real markers rather than naming their colours. A swatch is an
+ * The legend shows the real markers rather than naming their colors. A swatch is an
  * inline span, so it needs blockifying here; in the list it is a grid item and gets
  * that for free.
  */
@@ -121,7 +121,7 @@
   color: var(--accent);
 }
 
-/* Body copy in the dialog is all one colour. The bullet sections were carrying the
+/* Body copy in the dialog is all one color. The bullet sections were carrying the
    dim class, which is a good deal darker than the definition lists beside them. */
 .help ul {
   margin: 14px 0 0;

@@ -149,7 +149,7 @@ figcaption {
   opacity: var(--onion, 0.5);
 }
 
-/* The slider is a web component. It only needs sizing and handle colours. */
+/* The slider is a web component. It only needs sizing and handle colors. */
 img-comparison-slider {
   --divider-width: 2px;
   --divider-color: var(--accent);
@@ -180,11 +180,11 @@ img-comparison-slider img {
   padding: 8px 16px;
 
   border-bottom: 1px solid var(--line-soft);
-  /* Tinted rather than panel-coloured, because sharing the toolbar's background made
+  /* Tinted rather than panel-colored, because sharing the toolbar's background made
      it read as another strip of chrome instead of as something to notice. */
   background: var(--accent-soft);
   /* Body text on the tint, not accent on tint: the accent pair only reaches 4.3:1 in
-     dark mode. The icon carries the colour instead. */
+     dark mode. The icon carries the color instead. */
   color: var(--text);
 
   font-size: 12px;

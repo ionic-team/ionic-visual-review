@@ -227,7 +227,7 @@
 
 /*
  * A speech bubble, drawn as a mask so the row and the legend share one definition and
- * the shape still takes its colour from whatever it sits in.
+ * the shape still takes its color from whatever it sits in.
  */
 .note {
   display: inline-block;

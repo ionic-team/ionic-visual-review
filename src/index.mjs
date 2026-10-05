@@ -164,7 +164,7 @@ const CLIENT_DIR = join(HERE, 'client');
 const SLIDER_PKG = join(dirname(createRequire(import.meta.url).resolve('img-comparison-slider/package.json')), 'dist');
 const DEFAULT_PORT = 4300;
 
-/* Yellow only on a terminal, since styleText checks stdout before colouring. */
+/* Yellow only on a terminal, since styleText checks stdout before coloring. */
 const NO_ACCOUNT = styleText(
   'yellow',
   [

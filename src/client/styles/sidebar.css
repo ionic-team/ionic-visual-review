@@ -166,7 +166,7 @@
 }
 
 /*
- * Filled with the banner's own colour, not inverted. invert(1) flipped the painted
+ * Filled with the banner's own color, not inverted. invert(1) flipped the painted
  * pixels to whatever the mathematical inverse happened to be, which lands outside the
  * palette: the amber urgent banner turned blue and the blue one turned orange.
  */

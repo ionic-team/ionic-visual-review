@@ -39,7 +39,7 @@ configs().forEach(({ title, screenshot }) => {
 `;
 
 /**
- * Encodes a solid PNG, optionally with a band of a second colour.
+ * Encodes a solid PNG, optionally with a band of a second color.
  * @param {[number, number, number]} rgb
  * @param {{ band?: [number, number, number], deflateLevel?: number }} [options]
  * @returns {Buffer}
@@ -48,9 +48,9 @@ export const png = (rgb, { band, deflateLevel = 9 } = {}) => {
   const image = new PNG({ width: 40, height: 20 });
   for (let y = 0; y < image.height; y += 1) {
     for (let x = 0; x < image.width; x += 1) {
-      const colour = band && y < 5 ? band : rgb;
+      const color = band && y < 5 ? band : rgb;
       const i = (image.width * y + x) << 2;
-      image.data.set([...colour, 255], i);
+      image.data.set([...color, 255], i);
     }
   }
   return PNG.sync.write(image, { deflateLevel });
