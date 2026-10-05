@@ -1,0 +1,22 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":semanticCommitTypeAll(chore)"],
+  "description": "Renovate may only open or update PRs on weekdays, 6-10am ET.",
+  "timezone": "America/New_York",
+  "minimumReleaseAge": "3 days",
+  "schedule": ["* 6-10 * * 1-5"],
+  "semanticCommits": "enabled",
+  "rebaseWhen": "never",
+  "includePaths": ["package.json", ".github/workflows/**"],
+  "packageRules": [
+    {
+      "description": "Playwright pins its browser builds, so the package and the browsers in CI move together.",
+      "matchPackageNames": ["@playwright/test", "eslint-plugin-playwright"],
+      "groupName": "playwright"
+    },
+    {
+      "matchPackageNames": ["eslint", "@eslint/**", "eslint-plugin-*", "eslint-config-*", "globals"],
+      "groupName": "eslint"
+    }
+  ]
+}

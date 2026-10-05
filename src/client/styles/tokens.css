@@ -1,0 +1,102 @@
+/* Color tokens: dark by default, light from the system preference or the theme picker. */
+
+/*
+ * The slider handle and its interaction come from img-comparison-slider, and the help
+ * modal is a native <dialog>, so neither needs styling here beyond a few tokens.
+ */
+/*
+ * Dark is the default. Light arrives either by system preference or by explicit
+ * choice, and every color the interface uses is a token here so a theme is two
+ * lists rather than a hunt through the stylesheet.
+ *
+ * The soft variants are the tinted panels behind status text. They are listed rather
+ * than derived, because a tint that reads against near-black is not the tint that
+ * reads against white.
+ */
+:root {
+  --bg: #0b0e14;
+  --panel: #10141c;
+  --raised: #161b25;
+  --hover: #151a24;
+  --line: #212936;
+  --line-soft: #1a202b;
+  --text: #e6eaf2;
+  --muted: #8a94a7;
+  --dim: #78849a;
+  --on-accent: #ffffff;
+  --accent: #4c8dff;
+  --accent-soft: #1c2c4d;
+  --accent-tint: rgb(76 141 255 / 0.15);
+  --added: #3fb950;
+  --added-soft: rgb(63 185 80 / 0.16);
+  --removed: #f85149;
+  --removed-soft: rgb(248 81 73 / 0.16);
+  --modified: #d29922;
+  --modified-soft: rgb(210 153 34 / 0.16);
+  --renamed: #a371f7;
+  --renamed-soft: rgb(163 113 247 / 0.16);
+  --backdrop: rgb(0 0 0 / 0.6);
+  /* Behind a screenshot, so a transparent PNG still reads as transparent. */
+  --checker-a: #0d1118;
+  --checker-b: #0a0d13;
+  --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, monospace;
+  --shot-width: auto;
+}
+
+@media (prefers-color-scheme: light) {
+  /* Preference applies unless a choice has been made. */
+  :root:not([data-theme='dark']) {
+    --bg: #ffffff;
+    --panel: #f6f8fa;
+    --raised: #ffffff;
+    --hover: #eef1f4;
+    --line: #d0d7de;
+    --line-soft: #e4e8ed;
+    --text: #1f2328;
+    --muted: #59636e;
+    --dim: #656d76;
+    --on-accent: #ffffff;
+    --accent: #0969da;
+    --accent-soft: #ddf4ff;
+    --accent-tint: rgb(9 105 218 / 0.1);
+    --added: #1a7f37;
+    --added-soft: rgb(26 127 55 / 0.12);
+    --removed: #cf222e;
+    --removed-soft: rgb(207 34 46 / 0.1);
+    --modified: #9a6700;
+    --modified-soft: rgb(154 103 0 / 0.12);
+    --renamed: #8250df;
+    --renamed-soft: rgb(130 80 223 / 0.12);
+    --backdrop: rgb(31 35 40 / 0.4);
+    --checker-a: #eef1f4;
+    --checker-b: #e4e8ed;
+  }
+}
+
+/* And again for the choice, so it wins whatever the system says. */
+:root[data-theme='light'] {
+  --bg: #ffffff;
+  --panel: #f6f8fa;
+  --raised: #ffffff;
+  --hover: #eef1f4;
+  --line: #d0d7de;
+  --line-soft: #e4e8ed;
+  --text: #1f2328;
+  --muted: #59636e;
+  --dim: #656d76;
+  --on-accent: #ffffff;
+  --accent: #0969da;
+  --accent-soft: #ddf4ff;
+  --accent-tint: rgb(9 105 218 / 0.1);
+  --added: #1a7f37;
+  --added-soft: rgb(26 127 55 / 0.12);
+  --removed: #cf222e;
+  --removed-soft: rgb(207 34 46 / 0.1);
+  --modified: #9a6700;
+  --modified-soft: rgb(154 103 0 / 0.12);
+  --renamed: #8250df;
+  --renamed-soft: rgb(130 80 223 / 0.12);
+  --backdrop: rgb(31 35 40 / 0.4);
+  --checker-a: #eef1f4;
+  --checker-b: #e4e8ed;
+}

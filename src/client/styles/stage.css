@@ -1,0 +1,218 @@
+/* Stage: the panes, the notice strip, onion skin and the slider. */
+
+/*
+ * A column, so the notice explaining a one-sided screenshot sits under the image
+ * rather than beside it. Centring is left to the children's auto margins, which
+ * unlike align-items do not clip an image larger than the stage at 1:1 or 2x.
+ */
+.stage {
+  display: flex;
+
+  flex: 1;
+  flex-direction: column;
+  /* The safe keyword centres while content fits and falls back to start when it does
+     not, which is what keeps a 2x screenshot from having its top and left cut off. */
+  align-items: safe center;
+  justify-content: safe center;
+
+  min-height: 0;
+
+  padding: 20px;
+
+  background: repeating-conic-gradient(var(--checker-a) 0% 25%, var(--checker-b) 0% 50%) 50% / 18px 18px;
+
+  overflow: auto;
+  gap: 14px;
+}
+
+.stage.upscaled img {
+  image-rendering: pixelated;
+}
+
+/*
+ * A removed screenshot is still shown, because a filename cannot tell you which
+ * visual state stopped being covered. It is muted so it reads as gone rather than as
+ * something to review, and comes back to full strength on hover for the times it does
+ * need a closer look.
+ */
+.stage[data-status='D'] .pane {
+  transition: opacity 120ms ease;
+
+  opacity: 0.45;
+}
+
+.stage[data-status='D'] .pane:hover {
+  opacity: 1;
+}
+
+.stage[data-status='D'] #labelExpected {
+  color: var(--removed);
+}
+
+.view {
+  display: none;
+  /* Centring belongs to the stage now; an auto margin here would eat the free space
+     and push the notice away from the image it describes. */
+  flex: 0 0 auto;
+}
+
+.view.show {
+  display: flex;
+  gap: 18px;
+
+  align-items: flex-start;
+  justify-content: center;
+}
+
+figure {
+  display: flex;
+
+  flex-direction: column;
+
+  min-width: 0;
+
+  margin: 0;
+  gap: 7px;
+}
+
+figure[hidden] {
+  display: none;
+}
+
+figcaption a {
+  color: inherit;
+  text-decoration-color: var(--line);
+  text-underline-offset: 2px;
+}
+
+figcaption a:hover {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
+
+figcaption {
+  display: flex;
+  gap: 8px;
+
+  align-items: baseline;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.pane {
+  border: 1px solid var(--line);
+  /* Square, deliberately. A radius here clipped the screenshot's own corners, which
+     made a component look rounded when it was not. Nothing may alter the pixels. */
+  /* Literal white in both themes: the browser rendered these screenshots on white,
+     so anything else would misrepresent them. */
+  background: #fff;
+
+  line-height: 0;
+
+  overflow: hidden;
+}
+
+.pane img {
+  display: block;
+
+  width: var(--shot-width);
+  max-width: none;
+  height: auto;
+}
+
+/* Onion skin is two stacked layers, which no package is needed for. */
+.frame {
+  position: relative;
+}
+
+.sizer {
+  visibility: hidden;
+}
+
+/* Height stays automatic. Stretching a layer to the frame's height would squash one
+   version onto the other's dimensions, and most pairs in a regeneration differ in
+   height, which is exactly the change under review. */
+.layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+}
+
+.layer-top {
+  opacity: var(--onion, 0.5);
+}
+
+/* The slider is a web component. It only needs sizing and handle colors. */
+img-comparison-slider {
+  --divider-width: 2px;
+  --divider-color: var(--accent);
+  --default-handle-color: var(--accent);
+  --default-handle-opacity: 1;
+  --default-handle-width: 40px;
+  display: block;
+
+  width: var(--shot-width);
+}
+
+img-comparison-slider img {
+  width: 100%;
+}
+
+/* Sits above the stage rather than inside it: the stage scrolls, and a note saying
+   there is nothing to look at is no use once a tall screenshot has pushed it off. */
+.notice {
+  display: none;
+
+  flex: 0 0 auto;
+  gap: 8px;
+
+  align-items: center;
+
+  margin: 0;
+
+  padding: 8px 16px;
+
+  border-bottom: 1px solid var(--line-soft);
+  /* Tinted rather than panel-colored, because sharing the toolbar's background made
+     it read as another strip of chrome instead of as something to notice. */
+  background: var(--accent-soft);
+  /* Body text on the tint, not accent on tint: the accent pair only reaches 4.3:1 in
+     dark mode. The icon carries the color instead. */
+  color: var(--text);
+
+  font-size: 12px;
+}
+
+/* A circled i, drawn rather than fetched, so the strip announces itself as a note. */
+.notice::before {
+  flex: 0 0 auto;
+
+  width: 14px;
+  height: 14px;
+
+  border: 1px solid var(--accent);
+  border-radius: 50%;
+
+  color: var(--accent);
+
+  font-size: 10px;
+  font-style: italic;
+  font-weight: 700;
+
+  line-height: 13px;
+
+  text-align: center;
+
+  content: 'i';
+}
+
+.notice.show {
+  display: flex;
+}

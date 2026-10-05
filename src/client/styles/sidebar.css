@@ -1,0 +1,193 @@
+/* Sidebar: filter, checkboxes, facets, and the push and carried-over banners. */
+
+.sidebar {
+  display: flex;
+
+  flex-direction: column;
+
+  min-height: 0;
+
+  border-right: 1px solid var(--line);
+
+  background: var(--panel);
+}
+
+.controls {
+  display: flex;
+
+  flex-direction: column;
+  gap: 8px;
+
+  padding: 10px;
+
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.control-row {
+  display: flex;
+  /* Wraps rather than overflowing: the row gains a checkbox when the range holds
+     screenshots with no test, and three will not fit the sidebar on one line. */
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+}
+
+.facets {
+  display: flex;
+
+  flex-direction: column;
+  gap: 1px;
+
+  padding: 5px 8px 6px;
+
+  border-bottom: 1px solid var(--line-soft);
+
+  color: var(--muted);
+}
+
+/* One row per facet, named on the left. A facet with only one possible value is not
+   rendered at all, so a light-only, ltr-only range shows just the status row. */
+.facet {
+  display: grid;
+  /* Wide enough for "direction", the longest facet name. */
+  grid-template-columns: 64px 1fr;
+  gap: 4px;
+
+  align-items: start;
+}
+
+.facet-name {
+  padding-top: 4px;
+
+  color: var(--dim);
+
+  text-overflow: ellipsis;
+
+  overflow: hidden;
+}
+
+.facet-chips {
+  display: flex;
+
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.count {
+  padding: 3px 7px;
+
+  border: 1px solid transparent;
+  border-radius: 5px;
+
+  background: transparent;
+  color: inherit;
+
+  font: inherit;
+
+  cursor: pointer;
+}
+
+.count b {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.count:hover {
+  border-color: var(--line);
+
+  color: var(--text);
+}
+
+.count.active {
+  border-color: transparent;
+
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.count.active b {
+  color: var(--accent);
+}
+
+/* While a facet is filtering, its unselected values are dimmed rather than hidden, so
+   the row still reads as the whole range and not as a shrinking list. */
+.facet.filtering .count:not(.active) {
+  opacity: 0.45;
+}
+
+.carried {
+  margin: 0;
+
+  padding: 7px 12px;
+
+  border-bottom: 1px solid var(--line-soft);
+
+  background: var(--accent-soft);
+  color: var(--accent);
+
+  font-size: 11px;
+}
+
+.carried[hidden] {
+  display: none;
+}
+
+.pushed {
+  margin: 0;
+
+  padding: 7px 12px;
+
+  border-bottom: 1px solid var(--line-soft);
+
+  background: var(--accent-soft);
+  color: var(--accent);
+
+  font-size: 11px;
+}
+
+/* A push that rewrote something already marked is a correctness problem, not news. */
+.pushed.urgent {
+  background: var(--modified-soft);
+  color: var(--modified);
+}
+
+.refresh {
+  padding: 1px 8px;
+
+  border: 1px solid currentColor;
+  border-radius: 4px;
+
+  background: transparent;
+  color: inherit;
+
+  font: inherit;
+
+  cursor: pointer;
+}
+
+/*
+ * Filled with the banner's own color, not inverted. invert(1) flipped the painted
+ * pixels to whatever the mathematical inverse happened to be, which lands outside the
+ * palette: the amber urgent banner turned blue and the blue one turned orange.
+ */
+.refresh:hover:not(:disabled) {
+  border-color: var(--accent);
+
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.pushed.urgent .refresh:hover:not(:disabled) {
+  border-color: var(--modified);
+
+  background: var(--modified);
+}
+
+.refresh:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.pushed[hidden] {
+  display: none;
+}
