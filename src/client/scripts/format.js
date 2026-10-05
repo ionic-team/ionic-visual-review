@@ -1,4 +1,10 @@
-/* Number formatting for sizes and change figures. No DOM, so it loads under Node. */
+/*
+ * Number formatting for sizes and change figures. No DOM, so it loads under Node.
+ *
+ * - A missing side's size is blank rather than 0 KB.
+ * - No change reads 0%, and a change under 0.01% reads <0.01%, so the two never look
+ *   the same.
+ */
 
 /**
  * Formats a size in kilobytes.

@@ -1,4 +1,14 @@
-/* Rendering the screenshot list and its directory heads. */
+/*
+ * The screenshot list, its directory headers and the viewed count in the top bar.
+ *
+ * - Each row shows status, name, browser, change, a viewed tick and a comment marker.
+ *   The marker looks different when only a teammate commented.
+ * - A grouped row speaks for its whole set: partly viewed when some browsers are, the
+ *   largest change of any, and the missing-test warning if any member has no test.
+ * - A directory header's checkbox and count cover what the filters admit, and its
+ *   tooltip says how many it will mark.
+ * - When nothing matches the filters, the list says so.
+ */
 import { STATUS_LABEL, dom } from './dom.js';
 import { countViewed, entryFor, groupScope, setKeyOf, setScope, shortBrowser } from './entries.js';
 import { percent } from './format.js';

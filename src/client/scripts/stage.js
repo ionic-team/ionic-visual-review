@@ -1,4 +1,17 @@
-/* The stage: comparison modes, zoom and the selected screenshot. */
+/*
+ * The stage: the open screenshot, its comparison views, zoom and the crumbs above it.
+ *
+ * - Added and removed screenshots show their one side. Slider, onion skin and diff
+ *   are disabled when there is nothing to compare, and a notice says why: one side
+ *   is missing, the bytes are identical, or only the encoding changed.
+ * - When no pixel changed, the baseline is hidden rather than shown twice.
+ * - A renamed screenshot's baseline is read from its old path, and the crumbs say
+ *   where it moved from.
+ * - The crumbs also show the size, the change, a resize, a newer push having changed
+ *   it, and a missing test.
+ * - Fit zoom scales up to 3x. 1:1 and 2x use the screenshot's own size.
+ * - Opening a screenshot also loads its viewed tick, comment and teammates' comments.
+ */
 import { renderDelete, renderThreads } from './comments.js';
 import { COMPARING, STATUS_LABEL, VIEWS, dom } from './dom.js';
 import { entryFor, worthComparing } from './entries.js';

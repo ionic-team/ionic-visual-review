@@ -1,4 +1,10 @@
-/* Light, dark and system theme. */
+/*
+ * Light, dark and system theme.
+ *
+ * - System follows the operating system, and is the default.
+ * - The choice is remembered in this browser. Where storage is blocked, as in a
+ *   private window, it still applies until the page closes.
+ */
 import { dom } from './dom.js';
 
 const THEME_KEY = 'snapshot-review-theme';

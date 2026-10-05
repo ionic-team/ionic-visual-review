@@ -1,4 +1,15 @@
-/* Entry point: wires the controls in the order they always ran, then boots. */
+/*
+ * Entry point for the page: wires the controls, loads the review and renders it.
+ *
+ * - The comment box, teammates' comments and the c shortcut appear only for a pull
+ *   request with gh signed in. Viewed marks work in every case.
+ * - If a push changed screenshots since they were marked viewed, the sidebar says how
+ *   many lost their mark.
+ * - The orphans only and encoding only checkboxes appear only when there is one.
+ * - A newer push is checked for on load and whenever the tab regains focus.
+ * - Every image is prefetched after the first render, so stepping through stays
+ *   instant.
+ */
 import { renderPublish, wireComments } from './scripts/comments.js';
 import { wireControls } from './scripts/controls.js';
 import { dom } from './scripts/dom.js';

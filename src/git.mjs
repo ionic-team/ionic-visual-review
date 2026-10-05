@@ -1,3 +1,26 @@
+/*
+ * Everything read from git or GitHub.
+ *
+ * - Images are read through one long-lived git cat-file process. Nothing is checked
+ *   out, and the working tree is never touched.
+ * - The changed list is a three-dot diff from the merge base over every -snapshots
+ *   folder under core/src, with renames detected.
+ * - File names are split into browser, mode, theme, direction and palette. A name
+ *   outside the convention gets none of them.
+ * - Each screenshot is linked to the spec that took it, at the line when its
+ *   screenshot() call can be matched. One whose spec is gone is orphaned, unless it
+ *   is being removed.
+ * - Signed in to gh: pull request details, teammates' comments, viewed marks and
+ *   posting all go through gh.
+ * - Signed out: pull request details come from GitHub's public API, which allows 60
+ *   requests an hour. Teammates' comments, viewed sync and posting are unavailable.
+ * - origin not on GitHub: a pull request can't be read and no GitHub links are made.
+ *   Links are also left out for commits that aren't on origin yet.
+ * - Viewed marks go 50 to a request, one request at a time, as GitHub asks of a single
+ *   user. A path GitHub refuses is reported rather than thrown.
+ * - Comments post as one review of type COMMENT, never an approval or a change
+ *   request. If one fails partway, the half-built review is deleted.
+ */
 import { spawn, execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 

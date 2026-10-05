@@ -1,4 +1,10 @@
-/* Element lookups and the constants the rest of the client shares. */
+/*
+ * Every element the scripts use, looked up once by id, and the constants they share.
+ *
+ * - dom is typed from the id list, so a misspelt element name is a type error.
+ * - An id missing from index.html comes back null, and the first script to use it
+ *   throws.
+ */
 
 const IDS = /** @type {const} */ ([
   'stage',

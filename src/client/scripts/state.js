@@ -1,4 +1,10 @@
-/* The single mutable state object every module reads and writes. */
+/*
+ * The one mutable state object every script reads and writes.
+ *
+ * - Filled from the manifest on load, and again after Refresh reloads the page.
+ * - Nothing here is saved by itself. Viewed marks and comments persist through the
+ *   server, and preferences through localStorage in their own scripts.
+ */
 
 /**
  * One screenshot in the review, as the server sends it.

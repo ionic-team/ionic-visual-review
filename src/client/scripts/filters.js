@@ -1,4 +1,16 @@
-/* Facets, checkbox filters and grouping. */
+/*
+ * The facet rows, the checkbox filters and one row per test.
+ *
+ * - Each facet row (status, browser, mode, theme, direction, palette) is a filter.
+ *   Values combine within a row, and a screenshot must match every row in use.
+ * - A row with only one value is left out, except status. Theme is left out when it
+ *   repeats mode, which is always the case on main.
+ * - Text, facets, orphans only and encoding only decide what a directory covers.
+ *   Unviewed only just hides rows, so directory counts stay whole.
+ * - One row per test collapses each browser set to one row, led by Chrome, and is
+ *   remembered in this browser.
+ * - When the open screenshot is filtered out, the first visible one opens instead.
+ */
 import { BROWSER_ORDER, STATUS_COUNT_LABEL, dom } from './dom.js';
 import { reencodedOnly, setKeyOf, setLead, shortBrowser } from './entries.js';
 import { renderList } from './list.js';

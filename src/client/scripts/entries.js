@@ -1,4 +1,14 @@
-/* Lookups over the screenshot list: directories, browser sets, scopes. */
+/*
+ * Lookups over the screenshot list: by path, by directory and by browser set.
+ *
+ * - A browser set is one test's screenshot across browsers. Chrome stands for the set
+ *   when present, otherwise the first one.
+ * - Directory and set scopes hold only what the filters admit, so a screenshot the
+ *   filters hide is never marked.
+ * - The comparison views are skipped when one side is missing or no pixel changed.
+ * - Encoding only means different bytes with identical pixels. A rename that kept the
+ *   same bytes doesn't count.
+ */
 import { state } from './state.js';
 
 /** @typedef {import('./state.js').Entry} Entry */

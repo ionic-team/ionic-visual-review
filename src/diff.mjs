@@ -1,3 +1,14 @@
+/*
+ * Pixel comparison of two screenshots.
+ *
+ * - Compared with pixelmatch at a 0.1 threshold. Antialiasing differences are
+ *   ignored and painted yellow in the diff image; real changes are painted red over
+ *   a dimmed copy of the screenshot.
+ * - When the sizes differ, both are padded top left onto the larger canvas, so added
+ *   or removed rows count as changed rather than being scaled away.
+ * - The ratio is changed pixels over that canvas. Zero means identical pixels, even
+ *   when the files' bytes differ.
+ */
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 

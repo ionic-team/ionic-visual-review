@@ -1,4 +1,15 @@
-/* Writes to the server, and noticing a newer push. */
+/*
+ * Writes to the server, and noticing a newer push.
+ *
+ * - Every viewed or comment change is saved through the server. A save that fails is
+ *   dropped silently.
+ * - When a viewed mark doesn't reach GitHub, the viewed count is marked out of sync,
+ *   and its tooltip names the files GitHub refused or gives the error.
+ * - A newer push shows a banner with Refresh. It is urgent when the push changed
+ *   something just marked, naming the file if it was one, and quiet otherwise.
+ * - Refresh rebuilds the review on the newer push and reloads. If that fails, the
+ *   button says so and the current review stays.
+ */
 import { fileOf } from './comments.js';
 import { dom } from './dom.js';
 import { select } from './stage.js';

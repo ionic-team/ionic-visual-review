@@ -1,20 +1,31 @@
 /**
- * Local reviewer for screenshot diffs.
+ * Local reviewer for screenshot diffs: the server behind the page.
  *
- * GitHub's web diff refuses to render pull requests with hundreds of binary files,
- * which is every screenshot regeneration this repository produces. This serves the
- * same before and after pairs out of the git object store, with comparison modes the
- * web viewer only offers a few files at a time.
+ * GitHub's Files tab won't render pull requests with hundreds of binary files, which
+ * is every screenshot regeneration this repository produces. This serves the same
+ * before and after pairs out of the git object store instead.
  *
- * Four views per pair: side by side, a slider, an onion skin, and a pixel diff. The
- * diff is generated once per range and cached, since the changed-pixel percentage is
- * what the list sorts by and has to exist before the page renders.
+ * - The clone comes from --repo, else ../ionic-framework next to this repository,
+ *   else a path typed in at the prompt. With no terminal to ask in, it exits.
+ * - A pull request (--pr) is pinned to its head commit at startup, and its base branch
+ *   is fetched so the baseline is current. A range (--base, --head) is read locally
+ *   and never contacts GitHub.
+ * - Signed out of gh, a pull request still opens: a yellow warning prints, teammates'
+ *   comments are not shown, nothing can be posted, and viewed marks stay local.
+ * - Each pair is diffed once and cached by the two images' blob ids, so a push only
+ *   diffs what it changed. Cache entries unused for 14 days are deleted at startup.
+ * - Viewed marks and comments are saved per pull request, or per range, in the
+ *   clone's .git/snapshot-review. A mark survives a push only if neither image
+ *   changed. A comment always survives, flagged stale if its screenshot changed.
+ * - Viewed marks are mirrored to the pull request's Files tab when signed in.
+ *   Comments reach GitHub only through Post, and deleting a posted one removes it
+ *   there first.
+ * - A newer push is looked for on load, on tab focus and on every mark, at most every
+ *   2 seconds for a range, 30 for a pull request, and 5 minutes signed out. Refresh
+ *   rebuilds on it without a restart, and keeps the current review if that fails.
+ * - Port 4300, or the next free one up to 4320.
  *
- * Directories can be checked off as a unit, with a per-browser control inside each
- * one, because Playwright writes a screenshot per browser project and reviewing all
- * three of a set is redundant when only one of them is read.
- *
- * Usage, with ionic-framework cloned next to this repository or named with --repo:
+ * Usage:
  *   npm start -- --pr 31321
  *   npm start -- --repo ~/code/ionic-framework --pr 31321
  *   npm start -- --base origin/main --head my-branch

@@ -1,4 +1,13 @@
-/* Links to blobs on this server and to the same files on GitHub. */
+/*
+ * Links to images on this server and to the same files on GitHub.
+ *
+ * - GitHub links appear only for commits on origin. A branch that was never pushed
+ *   gets plain captions and no test link.
+ * - The test link opens the spec at the line that took the screenshot, or the whole
+ *   spec when the line can't be found. It is hidden when the spec is gone.
+ * - Image URLs carry the head commit, so after Refresh the browser never shows an
+ *   image cached from the previous push.
+ */
 import { dom } from './dom.js';
 import { state } from './state.js';
 

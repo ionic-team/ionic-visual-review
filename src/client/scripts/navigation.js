@@ -1,4 +1,14 @@
-/* Moving through the list and marking screenshots viewed. */
+/*
+ * Moving through the list and marking screenshots viewed.
+ *
+ * - j and k stop at either end. n wraps round to the top.
+ * - Marking a grouped row marks every browser in its set that the filters admit.
+ * - With unviewed only on, a marked row disappears and the selection moves to the
+ *   row that took its place.
+ * - A directory checkbox, or Shift+V, marks the whole directory in one write.
+ * - Marks show immediately. Saving them, and syncing them to GitHub, happens in
+ *   sync.js and on the server.
+ */
 import { dom } from './dom.js';
 import { entryFor, groupScope, setKeyOf, setScope } from './entries.js';
 import { applyFilter } from './filters.js';

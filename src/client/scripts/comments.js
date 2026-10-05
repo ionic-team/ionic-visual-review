@@ -1,4 +1,22 @@
-/* Comment box, teammate threads, publishing and deleting. */
+/*
+ * Comment box, teammates' comments, posting and deleting.
+ *
+ * - Shown only for a pull request with gh signed in. Without either, there is
+ *   nowhere for a comment to go, so the whole section is hidden.
+ * - A comment saves locally 400 ms after typing stops. Nothing reaches GitHub until
+ *   Post.
+ * - Post sends every unsent comment as one review, after confirming. On a merged or
+ *   closed pull request it is disabled, with the reason as its tooltip. If posting
+ *   fails, the button says so and every comment stays unsent.
+ * - Editing a posted comment makes it unsent again. It posts as a new comment rather
+ *   than editing the old one.
+ * - A comment written before its screenshot changed in a newer push is flagged until
+ *   it is rewritten.
+ * - Delete clears a local comment. A posted one is deleted from the pull request too,
+ *   after confirming, and stays here if GitHub refuses.
+ * - Teammates' comments are read only, with resolved and outdated threads marked.
+ *   Their HTML is rebuilt from an allowlist: no images, and only http(s) links.
+ */
 import { dom } from './dom.js';
 import { refreshRow } from './list.js';
 import { state } from './state.js';

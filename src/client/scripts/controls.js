@@ -1,4 +1,16 @@
-/* Event wiring for the toolbar, list, filters and dialogs. */
+/*
+ * Click and change handlers for the toolbar, list, filters and dialogs.
+ *
+ * - A disabled comparison mode ignores clicks, so a screenshot with nothing to
+ *   compare stays side by side.
+ * - A directory checkbox marks what the filters admit in that directory, not every
+ *   screenshot in it.
+ * - One row per test is remembered in this browser. Toggling it keeps the open
+ *   screenshot selected, on whichever row now carries it.
+ * - Unviewed only and the theme picker give up focus after a change, so the keyboard
+ *   shortcuts keep working.
+ * - Clicking outside the help dialog closes it. Fit zoom recalculates on resize.
+ */
 import { deleteCurrentComment, publishComments } from './comments.js';
 import { dom } from './dom.js';
 import { entryFor, setKeyOf } from './entries.js';

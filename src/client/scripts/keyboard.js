@@ -1,4 +1,14 @@
-/* Keyboard shortcuts. */
+/*
+ * Keyboard shortcuts, as listed in the help dialog.
+ *
+ * - Ignored while typing in a field, while a modifier key is held, or while help is
+ *   open. Escape leaves a field.
+ * - v toggles the open screenshot's mark and moves on. n jumps to the next unviewed,
+ *   wrapping to the top.
+ * - Shift+V marks the open screenshot's directory, or unmarks it when all of it is
+ *   viewed, covering only what the filters admit.
+ * - c focuses the comment box only when it is shown: a pull request with gh signed in.
+ */
 import { ZOOM_ORDER, dom } from './dom.js';
 import { countViewed, entryFor, groupScope } from './entries.js';
 import { refilter } from './filters.js';
