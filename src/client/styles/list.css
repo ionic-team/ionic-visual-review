@@ -78,18 +78,45 @@
 }
 
 .row {
+  display: flex;
+
+  align-items: center;
+  gap: 8px;
+
+  padding: 0 12px 0 8px;
+
+  border-left: 2px solid transparent;
+
+  cursor: pointer;
+}
+
+/* Lined up under the directory's checkbox, which this one rolls up into. */
+.row-box {
+  flex: 0 0 auto;
+
+  margin: 0 0 0 2px;
+  accent-color: var(--accent);
+
+  cursor: pointer;
+}
+
+.row-open {
   display: grid;
+
+  flex: 1;
 
   align-items: center;
 
-  width: 100%;
+  min-width: 0;
 
-  padding: 5px 12px;
+  padding: 5px 0;
 
   border: none;
-  border-left: 2px solid transparent;
 
   background: none;
+  color: inherit;
+
+  font: inherit;
 
   text-align: left;
 
@@ -99,7 +126,7 @@
    * track sizes to that row's own content, so "Chrome" and "Firefox" landed at
    * different x positions down the list. The name takes what is left and truncates.
    */
-  grid-template-columns: 8px 1fr 44px 40px 26px;
+  grid-template-columns: 8px 1fr 44px 40px 11px;
   gap: 8px;
 }
 
@@ -171,10 +198,6 @@
   text-align: center;
 }
 
-.row.is-part .tick {
-  opacity: 0.45;
-}
-
 .row-browser {
   color: var(--dim);
 
@@ -205,24 +228,13 @@
 
 .row-flags {
   display: flex;
-  gap: 3px;
-  /* Centred against the tick, which is a text glyph sitting on its own baseline. */
+
   align-items: center;
   justify-content: flex-end;
-
-  color: var(--dim);
-
-  font-size: 11px;
 }
 
 .row-flags .off {
   visibility: hidden;
-}
-
-.row-flags .tick {
-  flex: 0 0 auto;
-
-  color: var(--added);
 }
 
 /*
@@ -231,8 +243,8 @@
  */
 .note {
   display: inline-block;
-  /* Must not shrink: it shares a narrow column with the viewed tick, and a flex item
-     with a fixed width will still be squashed without this. */
+  /* Must not shrink: it sits in a narrow column, and a flex item with a fixed width
+     will still be squashed without this. */
   flex: 0 0 auto;
 
   width: 11px;

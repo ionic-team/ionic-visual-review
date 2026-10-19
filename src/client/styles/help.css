@@ -113,10 +113,6 @@
   display: inline-block;
 }
 
-.help .legend .tick {
-  color: var(--added);
-}
-
 .help .legend .note {
   color: var(--accent);
 }

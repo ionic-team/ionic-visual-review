@@ -3,6 +3,7 @@
  *
  * - A disabled comparison mode ignores clicks, so a screenshot with nothing to
  *   compare stays side by side.
+ * - A row checkbox marks that row without selecting it.
  * - A directory checkbox marks what the filters admit in that directory, not every
  *   screenshot in it.
  * - The comparison view and One row per test are remembered in this browser.
@@ -17,7 +18,7 @@ import { dom } from './dom.js';
 import { entryFor, setKeyOf } from './entries.js';
 import { GROUP_KEY, applyFilter, refilter, renderFacets } from './filters.js';
 import { renderList } from './list.js';
-import { setViewed, toggleGroup } from './navigation.js';
+import { setViewed, toggleGroup, toggleRow } from './navigation.js';
 import { MODE_KEY, applyMode, applyZoom, select } from './stage.js';
 import { state } from './state.js';
 import { applyTheme } from './theme.js';
@@ -55,9 +56,11 @@ export const wireControls = () => {
   );
 
   dom.list.addEventListener('click', (event) => {
+    const target = /** @type {Element} */ (event.target);
     /** @type {HTMLElement} */
-    const row = /** @type {Element} */ (event.target).closest('.row');
-    if (row) {
+    const row = target.closest('.row');
+    /* Ticking a row marks it without opening it, as in the editor's file tree. */
+    if (row && !target.classList.contains('row-box')) {
       select(row.dataset.path, { scroll: false });
     }
   });
@@ -66,6 +69,9 @@ export const wireControls = () => {
     const target = /** @type {HTMLInputElement} */ (event.target);
     if (target.classList.contains('group-box')) {
       toggleGroup(/** @type {HTMLElement} */ (target.closest('.group-head')).dataset.group, target.checked);
+    }
+    if (target.classList.contains('row-box')) {
+      toggleRow(/** @type {HTMLElement} */ (target.closest('.row')).dataset.path, target.checked);
     }
   });
 

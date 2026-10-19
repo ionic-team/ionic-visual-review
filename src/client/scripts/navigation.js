@@ -5,6 +5,7 @@
  * - Marking a grouped row marks every browser in its set that the filters admit.
  * - With unviewed only on, a marked row disappears and the selection moves to the
  *   row that took its place.
+ * - A row's checkbox marks that row without opening it.
  * - A directory checkbox, or Shift+V, marks the whole directory in one write.
  * - Marks show immediately. Saving them, and syncing them to GitHub, happens in
  *   sync.js and on the server.
@@ -142,6 +143,16 @@ const setViewedMany = (paths, value) => {
     refreshRow(path);
   }
   refreshGroupHeads();
+};
+
+/**
+ * Marks the screenshot a row's checkbox belongs to, and its whole set when grouped.
+ * @param {string} path
+ * @param {boolean} value
+ */
+export const toggleRow = (path, value) => {
+  const entry = entryFor(path);
+  setViewedMany(state.grouped && entry ? setScope(setKeyOf(entry)).map((member) => member.path) : [path], value);
 };
 
 /**

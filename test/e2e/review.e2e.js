@@ -92,3 +92,21 @@ test('should open side by side and remember the chosen view', async ({ page }) =
   await page.locator(`.row[data-path="${FIXTURE.modified}"]`).click();
   await expect(page.locator('#modes .active')).toHaveText('Onion skin');
 });
+
+test('should mark a row viewed from its checkbox without opening it', async ({ page }) => {
+  const first = page.locator('.row').first();
+  const second = page.locator('.row').nth(1);
+  await first.click();
+
+  const saved = page.waitForResponse((response) => response.url().endsWith('/api/state'));
+  await second.locator('.row-box').check();
+  await saved;
+
+  await expect(second).toHaveClass(/is-viewed/);
+  await expect(first).toHaveClass(/selected/);
+
+  /* The store writes after a short debounce, so give it time before reloading. */
+  await page.waitForTimeout(400);
+  await page.reload();
+  await expect(page.locator('.row').nth(1).locator('.row-box')).toBeChecked();
+});

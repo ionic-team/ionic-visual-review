@@ -1,8 +1,8 @@
 /*
  * The screenshot list, its directory headers and the viewed count in the top bar.
  *
- * - Each row shows status, name, browser, change, a viewed tick and a comment marker.
- *   The marker looks different when only a teammate commented.
+ * - Each row shows a viewed checkbox, status, name, browser, change and a comment
+ *   marker. The marker looks different when only a teammate commented.
  * - A grouped row speaks for its whole set: partly viewed when some browsers are, the
  *   largest change of any, and the missing-test warning if any member has no test.
  * - A directory header's checkbox and count cover what the filters admit, and its
@@ -45,7 +45,7 @@ const escapeHtml = (text) =>
  * @param {Entry} entry The screenshot the row shows.
  */
 const paintRow = (row, entry) => {
-  /* A grouped row answers for every browser behind it, so its tick, its comment
+  /* A grouped row answers for every browser behind it, so its checkbox, its comment
      marker and its change figure all have to describe the set, not just the lead. */
   const kin = row.dataset.set ? setScope(row.dataset.set) : [entry];
   const seen = countViewed(kin);
@@ -54,8 +54,6 @@ const paintRow = (row, entry) => {
   row.classList.toggle('is-viewed', seen === kin.length);
   row.classList.toggle('is-part', seen > 0 && seen < kin.length);
 
-  /* Both slots are always emitted and hidden when empty, so a tick keeps the same
-     column whether or not the row also carries a comment. */
   /* One marker for any note on this screenshot, mine or a teammate's, since what a
      reviewer wants to spot in the list is that something was said about it. */
   const mine = kin.some((member) => state.comments.get(member.path));
@@ -68,12 +66,10 @@ const paintRow = (row, entry) => {
         ? `Viewed in all ${kin.length}`
         : `Viewed in ${seen} of ${kin.length}`;
 
-  const flags = [
-    `<span class="tick${seen ? '' : ' off'}" title="${tickTitle}">✓</span>`,
-    `<span class="note${mine || theirs ? '' : ' off'}${theirs && !mine ? ' theirs' : ''}" title="${
-      mine && theirs ? 'You and others commented' : mine ? 'Has your comment' : 'Commented on the pull request'
-    }"></span>`,
-  ].join('');
+  /* Always emitted and hidden when empty, so the change column stays put. */
+  const note = `<span class="note${mine || theirs ? '' : ' off'}${theirs && !mine ? ' theirs' : ''}" title="${
+    mine && theirs ? 'You and others commented' : mine ? 'Has your comment' : 'Commented on the pull request'
+  }"></span>`;
 
   const ratios = kin.map((member) => member.ratio).filter((ratio) => ratio !== null && ratio !== undefined);
   const ratio = ratios.length ? Math.max(...ratios) : null;
@@ -83,21 +79,31 @@ const paintRow = (row, entry) => {
   /* Grouped, any browser missing its test makes the whole row worth flagging. */
   const orphaned = kin.some((member) => member.orphaned);
 
+  /* The checkbox sits beside the button rather than inside it, since a button cannot
+     hold another control. */
   row.innerHTML = `
-    <span class="dot ${entry.status}" title="${STATUS_LABEL[entry.status] ?? ''}"></span>
-    <span class="row-stem">${
-      orphaned ? '<span class="warn" title="No test writes this screenshot"></span>' : ''
-    }${escapeHtml(rowLabel(entry))}</span>
-    <span class="row-browser">${
-      kin.length > 1
-        ? `<span class="row-kin" title="${kin.map((member) => shortBrowser(member.browser)).join(', ')}">${kin.length}</span>`
-        : entry.browser
-          ? shortBrowser(entry.browser)
-          : ''
-    }</span>
-    ${change}
-    <span class="row-flags">${flags}</span>
+    <input class="row-box" type="checkbox" title="${tickTitle}" aria-label="${tickTitle}" />
+    <button class="row-open" type="button">
+      <span class="dot ${entry.status}" title="${STATUS_LABEL[entry.status] ?? ''}"></span>
+      <span class="row-stem">${
+        orphaned ? '<span class="warn" title="No test writes this screenshot"></span>' : ''
+      }${escapeHtml(rowLabel(entry))}</span>
+      <span class="row-browser">${
+        kin.length > 1
+          ? `<span class="row-kin" title="${kin.map((member) => shortBrowser(member.browser)).join(', ')}">${kin.length}</span>`
+          : entry.browser
+            ? shortBrowser(entry.browser)
+            : ''
+      }</span>
+      ${change}
+      <span class="row-flags">${note}</span>
+    </button>
   `;
+
+  /** @type {HTMLInputElement} */
+  const box = row.querySelector('.row-box');
+  box.checked = seen === kin.length;
+  box.indeterminate = seen > 0 && seen < kin.length;
 };
 
 /**
@@ -204,7 +210,7 @@ export const renderList = () => {
       fragment.append(buildGroupHead(group));
     }
 
-    const row = document.createElement('button');
+    const row = document.createElement('div');
     row.className = 'row';
     row.dataset.path = entry.path;
     if (state.grouped) {
