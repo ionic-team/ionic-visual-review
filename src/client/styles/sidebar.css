@@ -115,23 +115,7 @@
   opacity: 0.45;
 }
 
-.carried {
-  margin: 0;
-
-  padding: 7px 12px;
-
-  border-bottom: 1px solid var(--line-soft);
-
-  background: var(--accent-soft);
-  color: var(--accent);
-
-  font-size: 11px;
-}
-
-.carried[hidden] {
-  display: none;
-}
-
+.carried,
 .pushed {
   margin: 0;
 
@@ -143,6 +127,11 @@
   color: var(--accent);
 
   font-size: 11px;
+}
+
+.carried[hidden],
+.pushed[hidden] {
+  display: none;
 }
 
 /* A push that rewrote something already marked is a correctness problem, not news. */
@@ -186,8 +175,4 @@
 .refresh:disabled {
   cursor: default;
   opacity: 0.6;
-}
-
-.pushed[hidden] {
-  display: none;
 }
