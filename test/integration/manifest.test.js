@@ -89,4 +89,21 @@ describe('store: viewed marks', () => {
     assert.deepEqual(flipped, [FIXTURE.added]);
     await wait(FLUSH);
   });
+
+  test('should keep a comment stale after an unrelated save', async () => {
+    const store = await createStore(fixture.dir, 'pr-3', entries);
+    store.update({ path: FIXTURE.modified, comment: 'Looks off' });
+    await wait(FLUSH);
+
+    /* A later push rewrites the commented snapshot. */
+    const pushed = entries.map((entry) =>
+      entry.path === FIXTURE.modified ? { ...entry, actualSha: 'f'.repeat(40) } : entry
+    );
+    const reopened = await createStore(fixture.dir, 'pr-3', pushed);
+    reopened.update({ path: FIXTURE.added, viewed: true });
+    await wait(FLUSH);
+
+    const again = await createStore(fixture.dir, 'pr-3', pushed);
+    assert.deepEqual(again.read().stale, [FIXTURE.modified]);
+  });
 });

@@ -323,8 +323,10 @@ export const createStore = async (cwd, key, entries) => {
       comment: state.comments[path] ?? '',
       postedComment: stored.entries[path]?.postedComment ?? '',
       postedId: stored.entries[path]?.postedId ?? null,
-      expectedSha: entry.expectedSha,
-      actualSha: entry.actualSha,
+      /* The shas the record was judged against, not the current ones, or a stale
+         comment would read as fresh from the next save on. */
+      expectedSha: stored.entries[path]?.expectedSha ?? entry.expectedSha,
+      actualSha: stored.entries[path]?.actualSha ?? entry.actualSha,
     };
   }
   stored = { version: 2, entries: live };
