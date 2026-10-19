@@ -65,7 +65,7 @@ export const wireKeyboard = () => {
       },
       '/': () => dom.filter.focus(),
       u: () => {
-        dom.unviewedOnly.checked = !dom.unviewedOnly.checked;
+        dom.hideViewed.checked = !dom.hideViewed.checked;
         refilter();
       },
       '?': () => dom.help.showModal(),

@@ -16,7 +16,7 @@ const IDS = /** @type {const} */ ([
   'help',
   'groupBrowsers',
   'filter',
-  'unviewedOnly',
+  'hideViewed',
   'orphansOnly',
   'orphansOnlyLabel',
   'reencodedOnly',
@@ -75,7 +75,7 @@ const IDS = /** @type {const} */ ([
  * @typedef {Record<(typeof IDS)[number], HTMLElement>
  *   & Record<'rangeLabel' | 'crumbTest', HTMLAnchorElement>
  *   & Record<'helpButton' | 'publish' | 'deleteComment', HTMLButtonElement>
- *   & Record<'groupBrowsers' | 'filter' | 'unviewedOnly' | 'orphansOnly' | 'reencodedOnly' | 'viewed' | 'onion', HTMLInputElement>
+ *   & Record<'groupBrowsers' | 'filter' | 'hideViewed' | 'orphansOnly' | 'reencodedOnly' | 'viewed' | 'onion', HTMLInputElement>
  *   & Record<'sxsExpected' | 'sxsActual' | 'sliderExpected' | 'sliderActual' | 'onionSizer' | 'onionExpected' | 'onionActual' | 'diffImage', HTMLImageElement>
  *   & { help: HTMLDialogElement, theme: HTMLSelectElement, comment: HTMLTextAreaElement }} Dom
  */

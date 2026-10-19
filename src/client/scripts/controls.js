@@ -9,7 +9,7 @@
  * - The comparison view and One row per test are remembered in this browser.
  *   Toggling One row per test keeps the open screenshot selected, on whichever row
  *   now carries it.
- * - Unviewed only and the theme picker give up focus after a change, so the keyboard
+ * - Hide viewed and the theme picker give up focus after a change, so the keyboard
  *   shortcuts keep working.
  * - Clicking outside the help dialog closes it. Fit zoom recalculates on resize.
  */
@@ -127,8 +127,8 @@ export const wireControls = () => {
 
   /* Focus would otherwise stay on the checkbox, where the review shortcuts are treated
      as typing and swallowed. */
-  dom.unviewedOnly.addEventListener('change', () => {
-    dom.unviewedOnly.blur();
+  dom.hideViewed.addEventListener('change', () => {
+    dom.hideViewed.blur();
     refilter();
   });
 

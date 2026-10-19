@@ -6,7 +6,7 @@
  * - A row with only one value is left out, except status. Theme is left out when it
  *   repeats mode, which is always the case on main.
  * - Text, facets, orphans only and encoding only decide what a directory covers.
- *   Unviewed only just hides rows, so directory counts stay whole.
+ *   Hide viewed just hides rows, so directory counts stay whole.
  * - One row per test collapses each browser set to one row, led by Chrome, and is
  *   remembered in this browser.
  * - When the open screenshot is filtered out, the first visible one opens instead.
@@ -111,12 +111,12 @@ export const renderFacets = () => {
 
 /**
  * Works out which entries the filters admit and which rows are visible, collapsing
- * browser sets when grouped. Unviewed only hides rows without narrowing a directory.
+ * browser sets when grouped. Hide viewed removes rows without narrowing a directory.
  */
 export const applyFilter = () => {
   const needle = dom.filter.value.trim().toLowerCase();
 
-  /* Content filters decide what a directory means. "Unviewed only" is deliberately
+  /* Content filters decide what a directory means. "Hide viewed" is deliberately
      not one of them: it hides rows by progress rather than by content, and folding it
      in here would make every directory read 0 out of however many are left. */
   state.inScope = new Set(
@@ -142,7 +142,7 @@ export const applyFilter = () => {
   );
 
   state.visible = state.entries.filter(
-    (entry) => state.inScope.has(entry.path) && !(dom.unviewedOnly.checked && state.viewed.has(entry.path))
+    (entry) => state.inScope.has(entry.path) && !(dom.hideViewed.checked && state.viewed.has(entry.path))
   );
 
   /* Collapsed here rather than at render, so that stepping, selecting and jumping to

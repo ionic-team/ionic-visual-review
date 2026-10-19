@@ -3,7 +3,7 @@
  *
  * - j and k stop at either end. n wraps round to the top.
  * - Marking a grouped row marks every browser in its set that the filters admit.
- * - With unviewed only on, a marked row disappears and the selection moves to the
+ * - With hide viewed on, a marked row disappears and the selection moves to the
  *   row that took its place.
  * - A row's checkbox marks that row without opening it.
  * - A directory checkbox, or Shift+V, marks the whole directory in one write.
@@ -76,7 +76,7 @@ export const setViewed = (value, { advance = false } = {}) => {
   dom.viewed.checked = value;
   renderProgress();
 
-  const hidden = dom.unviewedOnly.checked && value;
+  const hidden = dom.hideViewed.checked && value;
   if (hidden) {
     applyFilter();
     renderList();
@@ -127,7 +127,7 @@ const setViewedMany = (paths, value) => {
 
   /* Marking viewed removes rows while that filter is on, so the list has to be rebuilt
      rather than repainted in place. */
-  if (dom.unviewedOnly.checked) {
+  if (dom.hideViewed.checked) {
     const anchor = state.current;
     applyFilter();
     renderList();

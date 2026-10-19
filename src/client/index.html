@@ -41,7 +41,7 @@
         <div class="controls">
           <input id="filter" class="field" type="search" placeholder="Filter by name or folder" autocomplete="off" />
           <div class="control-row">
-            <label class="check"><input id="unviewedOnly" type="checkbox" /> Unviewed only</label>
+            <label class="check"><input id="hideViewed" type="checkbox" /> Hide viewed</label>
             <label class="check"><input id="groupBrowsers" type="checkbox" /> One row per test</label>
             <label id="orphansOnlyLabel" class="check" hidden
               ><input id="orphansOnly" type="checkbox" /> Missing test only</label
@@ -212,7 +212,7 @@
         <ul>
           <li>
             Marking viewed always works. It is kept in a local file, so the directory ticks, the progress bar,
-            <b>Unviewed only</b>, <kbd>v</kbd> and <kbd>V</kbd> behave the same however the review was started.
+            <b>Hide viewed</b>, <kbd>v</kbd> and <kbd>V</kbd> behave the same however the review was started.
           </li>
           <li>
             Reviewing a pull request while signed in also writes that state to the pull request, so its Files tab agrees
@@ -251,7 +251,7 @@
           <dt><kbd>/</kbd></dt>
           <dd>Focus the filter</dd>
           <dt><kbd>u</kbd></dt>
-          <dd>Toggle unviewed only</dd>
+          <dd>Toggle hide viewed</dd>
           <dt><kbd>?</kbd></dt>
           <dd>This panel</dd>
           <dt><kbd>Esc</kbd></dt>
