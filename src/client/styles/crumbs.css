@@ -81,8 +81,6 @@
   display: none;
 }
 
-/* Flags a pair whose dimensions changed, which is information neither GitHub nor a
-   plain overlay surfaces. */
 /* Reads as part of the path it follows, not as a button. */
 .test-link {
   color: var(--dim);
@@ -119,6 +117,8 @@
   display: none;
 }
 
+/* Flags a pair whose dimensions changed, which is information neither GitHub nor a
+   plain overlay surfaces. */
 .resize {
   padding: 1px 7px;
 

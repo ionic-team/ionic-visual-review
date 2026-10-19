@@ -1,10 +1,6 @@
 /* Color tokens: dark by default, light from the system preference or the theme picker. */
 
 /*
- * The slider handle and its interaction come from img-comparison-slider, and the help
- * modal is a native <dialog>, so neither needs styling here beyond a few tokens.
- */
-/*
  * Dark is the default. Light arrives either by system preference or by explicit
  * choice, and every color the interface uses is a token here so a theme is two
  * lists rather than a hunt through the stylesheet.

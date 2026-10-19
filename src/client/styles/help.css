@@ -1,8 +1,7 @@
 /* Help dialog and key caps. */
 
 .help {
-  /* Two columns of readable measure. At 340px in one column almost every line
-     wrapped, which is what made a short reference feel like a wall. */
+  /* One column, wide enough that a bullet is a line rather than a paragraph. */
   width: min(560px, calc(100vw - 48px));
   max-height: calc(100vh - 64px);
   overflow-y: auto;
@@ -22,10 +21,6 @@
 
 /* Each heading opens a section, so it needs room above it. The first does not, since
    the dialog's own padding already provides that. */
-/* One column, wide enough that a bullet is a line rather than a paragraph. Splitting
-   into two at this width gave each side barely more measure than the old 340px, so
-   the text wrapped just as hard and only the shape changed.
-   flow-root stops a section swallowing its first heading's top margin. */
 .help-columns > h2:first-child {
   margin-top: 0;
 }
