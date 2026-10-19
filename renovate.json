@@ -11,7 +11,7 @@
   "packageRules": [
     {
       "description": "Playwright pins its browser builds, so the package and the browsers in CI move together.",
-      "matchPackageNames": ["@playwright/test", "eslint-plugin-playwright"],
+      "matchPackageNames": ["@playwright/test"],
       "groupName": "playwright"
     },
     {
