@@ -27,6 +27,18 @@ const rowLabel = (entry) => {
 };
 
 /**
+ * Escapes text for an HTML template. File and directory names come from the pull
+ * request under review, so they are somebody else's text, not markup.
+ * @param {string} text
+ * @returns {string}
+ */
+const escapeHtml = (text) =>
+  String(text).replace(
+    /[&<>"']/g,
+    (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]
+  );
+
+/**
  * Draws a row's status, label, browser, change and flags. A grouped row describes its
  * whole set.
  * @param {HTMLElement} row
@@ -75,7 +87,7 @@ const paintRow = (row, entry) => {
     <span class="dot ${entry.status}" title="${STATUS_LABEL[entry.status] ?? ''}"></span>
     <span class="row-stem">${
       orphaned ? '<span class="warn" title="No test writes this screenshot"></span>' : ''
-    }${rowLabel(entry)}</span>
+    }${escapeHtml(rowLabel(entry))}</span>
     <span class="row-browser">${
       kin.length > 1
         ? `<span class="row-kin" title="${kin.map((member) => shortBrowser(member.browser)).join(', ')}">${kin.length}</span>`
@@ -148,7 +160,7 @@ const buildGroupHead = (group) => {
     <label class="group-check">
       <input class="group-box" type="checkbox" />
     </label>
-    <b class="group-name">${group}</b>
+    <b class="group-name">${escapeHtml(group)}</b>
     <span class="group-count mono"></span>
   `;
 
