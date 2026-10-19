@@ -45,9 +45,9 @@ The clone is where everything is read from:
 ## Linting
 
 ```sh
-npm run lint           # ESLint and stylelint, then Prettier formats in place
-npm run lint.fix       # the same, with ESLint and stylelint fixing what they can
-npm run typecheck      # TypeScript checks the JavaScript through its JSDoc types
+npm run lint           # Runs ESLint and Stylelint, then formats files with Prettier
+npm run lint.fix       # Runs ESLint and Stylelint with auto-fixing enabled, then formats files with Prettier
+npm run typecheck      # Type-checks JavaScript using TypeScript and JSDoc annotations
 ```
 
 CI fails if `npm run lint` leaves a diff, so run it before pushing.
@@ -55,9 +55,9 @@ CI fails if `npm run lint` leaves a diff, so run it before pushing.
 ## Testing
 
 ```sh
-npm test               # everything: test.spec, then test.e2e
-npm run test.spec      # unit and integration, about a second
-npm run test.e2e       # the app in a browser, about three seconds
+npm test               # Runs all tests: unit/integration tests, then end-to-end tests
+npm run test.spec      # Runs unit and integration tests (about 1 second)
+npm run test.e2e       # Runs end-to-end tests in a browser (about 3 seconds)
 ```
 
 The end-to-end tests need Playwright's Chromium once: `npx playwright install chromium`.
