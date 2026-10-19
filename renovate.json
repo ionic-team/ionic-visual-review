@@ -6,7 +6,7 @@
   "minimumReleaseAge": "3 days",
   "schedule": ["* 6-10 * * 1-5"],
   "semanticCommits": "enabled",
-  "rebaseWhen": "never",
+  "rebaseWhen": "conflicted",
   "includePaths": ["package.json", ".github/workflows/**"],
   "packageRules": [
     {
