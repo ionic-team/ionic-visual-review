@@ -1064,6 +1064,13 @@ export const main = async () => {
         const path = url.searchParams.get('path');
         const side = url.searchParams.get('side');
 
+        /* Only screenshots in this review are served. Any other path, one with a
+           newline in particular, would go straight into cat-file and misalign every
+           read after it. */
+        if (!review.byPath.has(path)) {
+          return send(res, 404, 'not found');
+        }
+
         /* The diff is generated, so it comes off disk. Expected and actual are the
            originals, read straight out of the object store. */
         const blob =
