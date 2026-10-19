@@ -276,7 +276,15 @@ export const publishComments = async () => {
     }
 
     state.unsent.clear();
+    /* On the pull request now, so Delete has to say so and confirm before removing
+       them. Without an id the server cannot delete it, so it is not marked. */
+    for (const { path, id } of result.posted ?? []) {
+      if (id) {
+        state.posted.add(path);
+      }
+    }
     renderPublish();
+    renderDelete();
 
     if (result.url) {
       window.open(result.url, '_blank', 'noreferrer');
