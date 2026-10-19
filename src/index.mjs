@@ -901,6 +901,19 @@ export const main = async () => {
   const server = createServer(async (req, res) => {
     const url = new URL(req.url, 'http://localhost');
 
+    /*
+     * Only this page may talk to the server, since it acts on GitHub as the reviewer.
+     * Another site's request carries its own Origin, and a rebound DNS name arrives
+     * with a Host that is not ours.
+     */
+    const { port } = /** @type {import('node:net').AddressInfo} */ (server.address());
+    const ours = new Set([`localhost:${port}`, `127.0.0.1:${port}`]);
+    const origin = req.headers.origin;
+
+    if (!ours.has(req.headers.host ?? '') || (origin !== undefined && !ours.has(origin.replace(/^http:\/\//, '')))) {
+      return send(res, 403, 'forbidden');
+    }
+
     try {
       if (req.method === 'POST' && url.pathname === '/api/comments/publish') {
         /* Only a pull request has somewhere to post to. A ref range does not. */
