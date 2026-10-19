@@ -33,6 +33,7 @@ import { promisify } from 'node:util';
  * @property {string} url
  * @property {boolean} isCrossRepository
  * @property {'OPEN' | 'CLOSED' | 'MERGED'} state
+ * @property {{ oid: string } | null} mergeCommit Null until it is merged.
  */
 
 /**
@@ -180,6 +181,8 @@ const restPullRequest = async (number, cwd) => {
     url: body.html_url,
     isCrossRepository: body.head.repo?.full_name !== body.base.repo?.full_name,
     state: body.merged_at ? 'MERGED' : body.state === 'closed' ? 'CLOSED' : 'OPEN',
+    /* Before a merge GitHub fills this with a test merge, which is not a real baseline. */
+    mergeCommit: body.merged_at && body.merge_commit_sha ? { oid: body.merge_commit_sha } : null,
   };
 };
 
@@ -201,7 +204,7 @@ export const resolvePullRequest = async (number, cwd) => {
               'view',
               String(number),
               '--json',
-              'baseRefName,headRefOid,headRefName,title,url,isCrossRepository,state',
+              'baseRefName,headRefOid,headRefName,title,url,isCrossRepository,state,mergeCommit',
             ],
             { cwd, maxBuffer: MAX_BUFFER }
           )
@@ -227,7 +230,18 @@ export const resolvePullRequest = async (number, cwd) => {
     () => {}
   );
 
-  const base = (await resolveRef(`origin/${pr.baseRefName}`, cwd)) ? `origin/${pr.baseRefName}` : pr.baseRefName;
+  /*
+   * Once merged, the base is the commit it was merged onto, not the branch.
+   *
+   * A merge commit puts the head inside the base branch, so the merge base becomes
+   * the head itself and nothing differs: every sync pull request opened empty. The
+   * merge's first parent is the base as it stood when the pull request went in.
+   */
+  const mergedOnto =
+    pr.state === 'MERGED' && pr.mergeCommit?.oid ? await resolveRef(`${pr.mergeCommit.oid}^1`, cwd) : null;
+
+  const base =
+    mergedOnto ?? ((await resolveRef(`origin/${pr.baseRefName}`, cwd)) ? `origin/${pr.baseRefName}` : pr.baseRefName);
 
   return { base, head: pr.headRefOid, pr };
 };
