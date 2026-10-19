@@ -9,6 +9,7 @@
  *   where it moved from.
  * - The crumbs also show the size, the change, a resize, a newer push having changed
  *   it, and a missing test.
+ * - The chosen view is remembered in this browser. Side by side is the default.
  * - Fit zoom scales up to 3x. 1:1 and 2x use the screenshot's own size.
  * - Opening a screenshot also loads its viewed tick, comment and teammates' comments.
  */
@@ -20,6 +21,8 @@ import { blobUrl, setCaptionLink, setTestLink } from './links.js';
 import { state } from './state.js';
 
 /** @typedef {import('./state.js').Entry} Entry */
+
+export const MODE_KEY = 'snapshot-review-mode';
 
 const STAGE_PADDING = 40;
 
@@ -54,6 +57,19 @@ export const applyZoom = () => {
 
   for (const button of dom.zoom.querySelectorAll('button')) {
     button.classList.toggle('active', button.dataset.zoom === state.zoom);
+  }
+};
+
+/** Applies the remembered comparison view. */
+export const restoreMode = () => {
+  let saved = null;
+  try {
+    saved = localStorage.getItem(MODE_KEY);
+  } catch {
+    saved = null;
+  }
+  if (saved && Object.hasOwn(VIEWS, saved)) {
+    state.mode = saved;
   }
 };
 

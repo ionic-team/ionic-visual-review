@@ -5,8 +5,9 @@
  *   compare stays side by side.
  * - A directory checkbox marks what the filters admit in that directory, not every
  *   screenshot in it.
- * - One row per test is remembered in this browser. Toggling it keeps the open
- *   screenshot selected, on whichever row now carries it.
+ * - The comparison view and One row per test are remembered in this browser.
+ *   Toggling One row per test keeps the open screenshot selected, on whichever row
+ *   now carries it.
  * - Unviewed only and the theme picker give up focus after a change, so the keyboard
  *   shortcuts keep working.
  * - Clicking outside the help dialog closes it. Fit zoom recalculates on resize.
@@ -17,7 +18,7 @@ import { entryFor, setKeyOf } from './entries.js';
 import { GROUP_KEY, applyFilter, refilter, renderFacets } from './filters.js';
 import { renderList } from './list.js';
 import { setViewed, toggleGroup } from './navigation.js';
-import { applyMode, applyZoom, select } from './stage.js';
+import { MODE_KEY, applyMode, applyZoom, select } from './stage.js';
 import { state } from './state.js';
 import { applyTheme } from './theme.js';
 
@@ -31,6 +32,11 @@ export const wireControls = () => {
     const mode = target.dataset?.mode;
     if (mode && !target.disabled) {
       state.mode = mode;
+      try {
+        localStorage.setItem(MODE_KEY, mode);
+      } catch {
+        /* A browser refusing storage is not a reason to refuse the view. */
+      }
       applyMode();
       applyZoom();
     }

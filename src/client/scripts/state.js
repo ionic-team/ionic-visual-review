@@ -82,6 +82,7 @@ export const state = {
   head: null,
   /* Repo and the two commits, when they are pushed and can be linked to. */
   blobBase: null,
-  mode: 'slider',
+  /* Side by side first, as on GitHub, until a view is picked and remembered. */
+  mode: 'sxs',
   zoom: 'fit',
 };

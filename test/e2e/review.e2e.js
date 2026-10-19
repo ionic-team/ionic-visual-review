@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
-import { createFixtureRepo } from '../fixtures/repo.js';
+import { FIXTURE, createFixtureRepo } from '../fixtures/repo.js';
 
 const CLI = fileURLToPath(new URL('../../src/cli.mjs', import.meta.url));
 
@@ -81,4 +81,14 @@ test('should keep a viewed mark across a reload', async ({ page }) => {
   await page.waitForTimeout(400);
   await page.reload();
   await expect(page.locator('#progressLabel')).toHaveText('1 / 6 viewed');
+});
+
+test('should open side by side and remember the chosen view', async ({ page }) => {
+  await page.locator(`.row[data-path="${FIXTURE.modified}"]`).click();
+  await expect(page.locator('#modes .active')).toHaveText('Side by side');
+
+  await page.getByRole('button', { name: 'Onion skin' }).click();
+  await page.reload();
+  await page.locator(`.row[data-path="${FIXTURE.modified}"]`).click();
+  await expect(page.locator('#modes .active')).toHaveText('Onion skin');
 });

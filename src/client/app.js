@@ -18,7 +18,7 @@ import { applyFilter, renderFacets, restoreGrouping } from './scripts/filters.js
 import { wireKeyboard } from './scripts/keyboard.js';
 import { blobUrl } from './scripts/links.js';
 import { renderList, renderProgress } from './scripts/list.js';
-import { select } from './scripts/stage.js';
+import { restoreMode, select } from './scripts/stage.js';
 import { state } from './scripts/state.js';
 import { checkFreshness } from './scripts/sync.js';
 import { restoreTheme } from './scripts/theme.js';
@@ -31,6 +31,7 @@ const init = async () => {
   /* Before the manifest, so the first paint is already in the right theme. */
   restoreTheme();
   restoreGrouping();
+  restoreMode();
 
   window.addEventListener('focus', checkFreshness);
 
