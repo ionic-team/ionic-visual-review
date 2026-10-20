@@ -94,8 +94,8 @@ textarea {
     linear-gradient(135deg, currentColor 50%, transparent 50%);
   background-repeat: no-repeat;
   background-position:
-    calc(100% - 12px) 55%,
-    calc(100% - 8px) 55%;
+    calc(100% - 12px) 50%,
+    calc(100% - 8px) 50%;
   background-size: 4px 4px;
 
   font-size: 11px;
