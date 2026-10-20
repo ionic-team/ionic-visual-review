@@ -486,7 +486,15 @@ const createFreshness = ({ args, viewer, range, cwd, reviewedAt }) => {
     checkedAt = Date.now();
 
     try {
-      latest = (args.pr ? await headOfPullRequest(args.pr, cwd) : await resolveRef(range.head, cwd)) ?? latest;
+      const head = args.pr ? await headOfPullRequest(args.pr, cwd) : await resolveRef(range.head, cwd);
+
+      /* GitHub names the new head but does not send it, and without the commit every
+         path reads as missing, so as changed. Fetched once per push, as at startup. */
+      if (args.pr && head && !(await resolveRef(head, cwd))) {
+        await git(['fetch', 'origin', `pull/${args.pr}/head`], cwd);
+      }
+
+      latest = head ?? latest;
     } catch {
       /* Offline, or gh is unhappy. Staying on the last answer is better than
          interrupting a review with an error it cannot act on. */
