@@ -5,8 +5,9 @@
  *   gets plain captions and no test link.
  * - The test link opens the spec at the line that took the screenshot, or the whole
  *   spec when the line can't be found. It is hidden when the spec is gone.
- * - Image URLs carry the head commit, so after Refresh the browser never shows an
- *   image cached from the previous push.
+ * - Image URLs are named by content, the same on the server and in a static export.
+ *   A push that changes a screenshot gives it a new URL, so after Refresh the browser
+ *   never shows an image cached from the previous push.
  */
 import { dom } from './dom.js';
 import { state } from './state.js';
@@ -77,10 +78,13 @@ export const setCaptionLink = (label, side, path, status) => {
 };
 
 /**
- * This server's URL for one side of a screenshot. The commit is in the query, so a
- * refresh never serves an image cached from the previous push.
+ * The URL for one side of a screenshot: expected and actual by blob id, the diff by
+ * the pair.
  * @param {'expected' | 'actual' | 'diff'} side
- * @param {string} path
+ * @param {Entry} entry
  * @returns {string}
  */
-export const blobUrl = (side, path) => `/blob?side=${side}&path=${encodeURIComponent(path)}&v=${state.head ?? ''}`;
+export const blobUrl = (side, entry) =>
+  side === 'diff'
+    ? `diffs/${entry.expectedSha}-${entry.actualSha}.png`
+    : `images/${side === 'expected' ? entry.expectedSha : entry.actualSha}.png`;

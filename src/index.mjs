@@ -141,8 +141,8 @@ import {
  */
 
 /**
- * @typedef {object} Review
- * @property {Record<string, Thread[]>} threads Teammates' comments, by path.
+ * The screenshots in a range, compared: everything the server and an export share.
+ * @typedef {object} Snapshots
  * @property {{ repo: string, expected: string | null, actual: string | null } | null} blobBase For GitHub links.
  * @property {number} pruned
  * @property {number} computed
@@ -150,18 +150,29 @@ import {
  * @property {string} headSha
  * @property {string} mergeBase
  * @property {ReviewEntry[]} entries
- * @property {Map<string, string>} diffs
- * @property {Store} store
+ * @property {Map<string, string>} diffs Cached diff images, by `diffKey`.
+ * @property {Set<string>} shas Every image in the range, by blob id.
  * @property {Record<string, number>} counts By status.
- * @property {Map<string, string>} baselinePaths Where a renamed screenshot's baseline lives.
  * @property {Map<string, ReviewEntry>} byPath
+ */
+
+/**
+ * What only the server needs on top: marks, teammates' comments and push watching.
+ * @typedef {object} Session
+ * @property {Record<string, Thread[]>} threads Teammates' comments, by path.
+ * @property {Store} store
  * @property {ReturnType<typeof createFreshness>} pushWatch
  */
 
+/** @typedef {Snapshots & Session} Review */
+
 const HERE = dirname(fileURLToPath(import.meta.url));
-const CLIENT_DIR = join(HERE, 'client');
+export const CLIENT_DIR = join(HERE, 'client');
 /* Resolved rather than walked to, so it is found wherever npm put node_modules. */
-const SLIDER_PKG = join(dirname(createRequire(import.meta.url).resolve('img-comparison-slider/package.json')), 'dist');
+export const SLIDER_PKG = join(
+  dirname(createRequire(import.meta.url).resolve('img-comparison-slider/package.json')),
+  'dist'
+);
 const DEFAULT_PORT = 4300;
 
 /* Yellow only on a terminal, since styleText checks stdout before coloring. */
@@ -211,11 +222,11 @@ const readArgs = () => {
 /**
  * Resolves the arguments to the range under review: a pull request, or `--base` and
  * `--head`. Given with `--pr`, `--base` and `--head` override the pull request's own ends.
- * @param {Args} args
+ * @param {Pick<Args, 'pr' | 'base' | 'head'>} args
  * @param {string} cwd
  * @returns {Promise<Range>}
  */
-const resolveRange = async (args, cwd) => {
+export const resolveRange = async (args, cwd) => {
   if (args.pr) {
     const { base, head, pr } = await resolvePullRequest(args.pr, cwd);
     return {
@@ -542,6 +553,14 @@ const createFreshness = ({ args, viewer, range, cwd, reviewedAt }) => {
 const DIFF_CACHE = 'diffs';
 
 /**
+ * Names a pair's diff by its two blob ids, in the cache and in image URLs alike.
+ * @param {string} expectedSha
+ * @param {string} actualSha
+ * @returns {string}
+ */
+export const diffKey = (expectedSha, actualSha) => `${expectedSha}-${actualSha}`;
+
+/**
  * Where a pair's diff image and metrics are cached, keyed by the two blob ids.
  * @param {string} root From `stateDir`.
  * @param {string} expectedSha
@@ -550,7 +569,7 @@ const DIFF_CACHE = 'diffs';
  */
 const diffCachePaths = (root, expectedSha, actualSha) => {
   const dir = join(root, DIFF_CACHE, expectedSha.slice(0, 2));
-  const stem = join(dir, `${expectedSha}-${actualSha}`);
+  const stem = join(dir, diffKey(expectedSha, actualSha));
   return { dir, png: `${stem}.png`, meta: `${stem}.json` };
 };
 
@@ -564,7 +583,7 @@ const diffCachePaths = (root, expectedSha, actualSha) => {
  * @param {string} options.head
  * @param {string} options.cacheRoot
  * @returns {Promise<{ entries: ReviewEntry[], diffs: Map<string, string>, computed: number, reused: number }>}
- * `diffs` maps a path to its cached diff image.
+ * `diffs` maps a `diffKey` to its cached diff image.
  */
 const buildDiffs = async ({ entries, reader, mergeBase, head, cacheRoot }) => {
   const results = {};
@@ -611,7 +630,7 @@ const buildDiffs = async ({ entries, reader, mergeBase, head, cacheRoot }) => {
         computed++;
       }
 
-      diffs.set(entry.path, paths.png);
+      diffs.set(diffKey(entry.expectedSha, entry.actualSha), paths.png);
     }
 
     results[entry.path] = {
@@ -752,15 +771,15 @@ const pruneCache = async (root) => {
 };
 
 /**
- * Builds everything the server answers from, as one value that refresh swaps whole.
+ * Lists and compares the screenshots in a range: what the server and an export share.
  * Every blob is read at the resolved head, so a moving branch cannot mix two commits.
- * @param {{ args: Args, viewer: string | null, range: Range, pathspec: string, cwd: string, reader: BlobReader }} options
- * @returns {Promise<Review>}
+ * @param {{ range: Range, pathspec: string, cwd: string, reader: BlobReader }} options
+ * @returns {Promise<Snapshots | null>} Null when no screenshot changed.
  */
-const buildReview = async ({ args, viewer, range, pathspec, cwd, reader }) => {
+export const buildSnapshots = async ({ range, pathspec, cwd, reader }) => {
   const manifest = await buildManifest({ base: range.base, head: range.head, pathspec, cwd });
   if (manifest.entries.length === 0) {
-    throw new Error(`No screenshots changed between ${range.base} and ${range.head}`);
+    return null;
   }
 
   const headSha = await resolveRef(range.head, cwd);
@@ -778,16 +797,7 @@ const buildReview = async ({ args, viewer, range, pathspec, cwd, reader }) => {
     cacheRoot: root,
   });
 
-  const store = await createStore(cwd, reviewKey(args, range), entries);
   const pruned = await pruneCache(root);
-
-  /* What teammates have already said, so their notes sit beside the screenshot they
-     are about. A failure here is not worth refusing to start over.
-     Narrowed to this range: a pull request collects comments on source files too, and
-     those have nowhere to appear here. */
-  const allThreads = args.pr ? await fetchReviewThreads({ number: args.pr, cwd }).catch(() => ({})) : {};
-  const inRange = new Set(entries.map((entry) => entry.path));
-  const threads = Object.fromEntries(Object.entries(allThreads).filter(([path]) => inRange.has(path)));
 
   /* Links are only offered for commits GitHub can actually serve. */
   const slug = await remoteSlug(cwd);
@@ -800,7 +810,6 @@ const buildReview = async ({ args, viewer, range, pathspec, cwd, reader }) => {
     : null;
 
   return {
-    threads,
     blobBase,
     pruned,
     computed,
@@ -809,23 +818,47 @@ const buildReview = async ({ args, viewer, range, pathspec, cwd, reader }) => {
     mergeBase: manifest.mergeBase,
     entries,
     diffs,
-    store,
+    shas: new Set(entries.flatMap((entry) => [entry.expectedSha, entry.actualSha]).filter(Boolean)),
     counts: entries.reduce((acc, entry) => ({ ...acc, [entry.status]: (acc[entry.status] ?? 0) + 1 }), {}),
-    /* The client only ever knows a screenshot by its current path, so the server
-       keeps the mapping back to where a renamed one's baseline lives. */
-    baselinePaths: new Map(entries.filter((entry) => entry.oldPath).map((entry) => [entry.path, entry.oldPath])),
     byPath: new Map(entries.map((entry) => [entry.path, entry])),
-    pushWatch: createFreshness({ args, viewer, range, cwd, reviewedAt: headSha }),
+  };
+};
+
+/**
+ * Builds everything the server answers from, as one value that refresh swaps whole.
+ * @param {{ args: Args, viewer: string | null, range: Range, pathspec: string, cwd: string, reader: BlobReader }} options
+ * @returns {Promise<Review>}
+ */
+const buildReview = async ({ args, viewer, range, pathspec, cwd, reader }) => {
+  const snapshots = await buildSnapshots({ range, pathspec, cwd, reader });
+  if (!snapshots) {
+    throw new Error(`No screenshots changed between ${range.base} and ${range.head}`);
+  }
+
+  const store = await createStore(cwd, reviewKey(args, range), snapshots.entries);
+
+  /* What teammates have already said, so their notes sit beside the screenshot they
+     are about. A failure here is not worth refusing to start over.
+     Narrowed to this range: a pull request collects comments on source files too, and
+     those have nowhere to appear here. */
+  const allThreads = args.pr ? await fetchReviewThreads({ number: args.pr, cwd }).catch(() => ({})) : {};
+  const threads = Object.fromEntries(Object.entries(allThreads).filter(([path]) => snapshots.byPath.has(path)));
+
+  return {
+    ...snapshots,
+    threads,
+    store,
+    pushWatch: createFreshness({ args, viewer, range, cwd, reviewedAt: snapshots.headSha }),
   };
 };
 
 /**
  * Finds the checkout to review: `--repo`, else ionic-framework cloned next to the
  * reviewer, else whatever path the developer types in.
- * @param {Args} args
+ * @param {Pick<Args, 'repo'>} args
  * @returns {Promise<string>} The checkout's root.
  */
-const findRepo = async (args) => {
+export const findRepo = async (args) => {
   const reviewer = await repoRoot(HERE).catch(() => null);
   /** @param {string} path */
   const check = async (path) => {
@@ -1048,7 +1081,9 @@ export const main = async () => {
         });
       }
 
-      if (url.pathname === '/api/manifest') {
+      /* The same path an export writes it to, so the page reads it the same way from
+         either. */
+      if (url.pathname === '/manifest.json') {
         return send(
           res,
           200,
@@ -1070,29 +1105,26 @@ export const main = async () => {
         );
       }
 
-      if (url.pathname === '/blob') {
-        const path = url.searchParams.get('path');
-        const side = url.searchParams.get('side');
+      /*
+       * Images are named by content, the same way an export lays them out: expected and
+       * actual by blob id, a diff by the pair. Only ids in this review are served. Any
+       * other name, one with a newline in particular, would go straight into cat-file
+       * and misalign every read after it.
+       */
+      const image = url.pathname.match(/^\/(images|diffs)\/([0-9a-f-]+)\.png$/);
 
-        /* Only screenshots in this review are served. Any other path, one with a
-           newline in particular, would go straight into cat-file and misalign every
-           read after it. */
-        if (!review.byPath.has(path)) {
-          return send(res, 404, 'not found');
-        }
+      if (image) {
+        const [, kind, name] = image;
 
         /* The diff is generated, so it comes off disk. Expected and actual are the
            originals, read straight out of the object store. */
         const blob =
-          side === 'diff'
-            ? review.diffs.has(path)
-              ? await readFile(review.diffs.get(path))
+          kind === 'diffs'
+            ? review.diffs.has(name)
+              ? await readFile(review.diffs.get(name))
               : null
-            : path
-              ? await reader.read(
-                  side === 'expected' ? review.mergeBase : review.headSha,
-                  side === 'expected' ? (review.baselinePaths.get(path) ?? path) : path
-                )
+            : review.shas.has(name)
+              ? await reader.readSha(name)
               : null;
 
         if (!blob) {

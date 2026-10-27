@@ -144,8 +144,8 @@ export const select = (path, { scroll = true } = {}) => {
         : `was ${entry.oldStem}`;
   dom.crumbRenamed.title = entry.oldPath ?? '';
 
-  const expected = entry.status === 'A' ? null : blobUrl('expected', entry.path);
-  const actual = entry.status === 'D' ? null : blobUrl('actual', entry.path);
+  const expected = entry.status === 'A' ? null : blobUrl('expected', entry);
+  const actual = entry.status === 'D' ? null : blobUrl('actual', entry);
 
   /* The baseline is hidden when it would be the same picture twice. */
   dom.figExpected.hidden = !expected || (entry.comparable && entry.ratio === 0);
@@ -167,7 +167,7 @@ export const select = (path, { scroll = true } = {}) => {
     dom.onionSizer.src = (entry.actualSize?.height ?? 0) >= (entry.expectedSize?.height ?? 0) ? actual : expected;
     dom.onionExpected.src = expected;
     dom.onionActual.src = actual;
-    dom.diffImage.src = blobUrl('diff', entry.path);
+    dom.diffImage.src = blobUrl('diff', entry);
     dom.diffCount.textContent = entry.changed === null ? '' : `${entry.changed.toLocaleString()} pixels`;
     dom.notice.classList.remove('show');
   } else {

@@ -953,9 +953,27 @@ export class BlobReader {
    * @returns {Promise<Buffer | null>} Null when the path is absent at `ref`.
    */
   read(ref, path) {
+    return this.#request(`${ref}:${path}`);
+  }
+
+  /**
+   * Reads one blob by its id.
+   * @param {string} sha
+   * @returns {Promise<Buffer | null>} Null when there is no such object.
+   */
+  readSha(sha) {
+    return this.#request(sha);
+  }
+
+  /**
+   * Queues one object name for cat-file.
+   * @param {string} name
+   * @returns {Promise<Buffer | null>}
+   */
+  #request(name) {
     return new Promise((resolve, reject) => {
       this.queue.push({ resolve, reject });
-      this.proc.stdin.write(`${ref}:${path}\n`);
+      this.proc.stdin.write(`${name}\n`);
     });
   }
 

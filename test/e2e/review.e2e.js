@@ -52,6 +52,14 @@ test('should list every changed snapshot under its directory', async ({ page }) 
   await expect(page.locator('.group-head .group-name')).toHaveText(['badge/test/basic', 'chip/test/hint']);
 });
 
+test('should load both sides and the diff of a modified snapshot', async ({ page }) => {
+  await page.locator(`.row[data-path="${FIXTURE.modified}"]`).click();
+
+  await expect(page.locator('#sxsExpected')).toHaveJSProperty('naturalWidth', 40);
+  await expect(page.locator('#sxsActual')).toHaveJSProperty('naturalWidth', 40);
+  await expect(page.locator('#diffImage')).toHaveJSProperty('naturalWidth', 40);
+});
+
 test('should flag the snapshot whose spec was deleted', async ({ page }) => {
   await page.getByLabel('Missing test only').check();
 

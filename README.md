@@ -33,6 +33,24 @@ npm start -- --repo ~/code/ionic-framework --pr 31321
 
 Press <kbd>?</kbd> in the app for what each marker means and the keyboard shortcuts.
 
+### Exporting a static site
+
+`export` writes the same review as plain files, for hosting where there is no clone to read from.
+
+```sh
+npm run export -- --base origin/main --head my-branch
+npm run export -- --base <sha> --head <sha> --out dist --label '#31321 fix(item): ...' --url <pull request>
+```
+
+| Option                          |                                                     |
+| ------------------------------- | --------------------------------------------------- |
+| `--base <ref>`, `--head <ref>`  | Required. A pull request number is not accepted.    |
+| `--out <dir>`                   | Defaults to `dist`. Must be empty or missing.       |
+| `--label <text>`, `--url <url>` | The header title and its link. Default to the refs. |
+| `--repo`, `--path`              | Same as above.                                      |
+
+The exported page is read-only. Viewed marks stay in the browser, comments are hidden, and a newer push is noticed when the deployment's `head.json` names a different commit. A range with no changed screenshots writes nothing and exits successfully.
+
 ### Why it needs a local clone
 
 The clone is where everything is read from:

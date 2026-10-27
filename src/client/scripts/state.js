@@ -3,7 +3,8 @@
  *
  * - Filled from the manifest on load, and again after Refresh reloads the page.
  * - Nothing here is saved by itself. Viewed marks and comments persist through the
- *   server, and preferences through localStorage in their own scripts.
+ *   server, or in this browser for a static export, and preferences through
+ *   localStorage in their own scripts.
  */
 
 /**
@@ -78,7 +79,10 @@ export const state = {
     palette: new Set(),
   },
   current: null,
-  /* The commit this page is showing, used to version image URLs. */
+  /* Read from a static export: no server behind the page, so marks stay in this
+     browser and there are no comments. */
+  static: false,
+  /* The commit this page is showing, so a static export can tell a newer push. */
   head: null,
   /* Repo and the two commits, when they are pushed and can be linked to. */
   blobBase: null,
