@@ -3,14 +3,17 @@
  *
  * - The comment box, teammates' comments and the c shortcut appear only for a pull
  *   request with gh signed in. Viewed marks work in every case.
+ * - A static export shows teammates' comments, read only, when its --url named a pull
+ *   request. It never has a comment box.
  * - If a push changed screenshots since they were marked viewed, the sidebar says how
  *   many lost their mark.
  * - The orphans only and encoding only checkboxes appear only when there is one.
- * - A newer push is checked for on load and whenever the tab regains focus.
+ * - A newer push is checked for on load and whenever the tab regains focus. A static
+ *   export also checks when an image fails to load.
  * - Every image is prefetched after the first render, so stepping through stays
  *   instant.
  */
-import { renderPublish, wireComments } from './scripts/comments.js';
+import { loadThreads, renderPublish, wireComments } from './scripts/comments.js';
 import { wireControls } from './scripts/controls.js';
 import { dom } from './scripts/dom.js';
 import { indexGroups, reencodedOnly } from './scripts/entries.js';
@@ -20,7 +23,7 @@ import { blobUrl } from './scripts/links.js';
 import { renderList, renderProgress } from './scripts/list.js';
 import { restoreMode, select } from './scripts/stage.js';
 import { state } from './scripts/state.js';
-import { checkFreshness } from './scripts/sync.js';
+import { checkFreshness, restoreViewed } from './scripts/sync.js';
 import { restoreTheme } from './scripts/theme.js';
 
 /**
@@ -35,16 +38,22 @@ const init = async () => {
 
   window.addEventListener('focus', checkFreshness);
 
-  const manifest = await fetch('/api/manifest').then((response) => response.json());
+  const manifest = await fetch('manifest.json', { cache: 'no-cache' }).then((response) => response.json());
+
+  state.static = manifest.static === true;
+  /* A static export has no server to keep marks, so this browser keeps them, and
+     reports the ones a push undid the same way the server does. */
+  const local = state.static ? restoreViewed(manifest.entries) : null;
+  const saved = local ?? manifest.state;
 
   state.head = manifest.head ?? null;
   state.blobBase = manifest.blobBase ?? null;
   state.entries = manifest.entries;
-  state.viewed = new Set(Object.keys(manifest.state.viewed ?? {}));
-  state.comments = new Map(Object.entries(manifest.state.comments ?? {}));
-  state.stale = new Set(manifest.state.stale ?? []);
-  state.unsent = new Set(manifest.state.unsent ?? []);
-  state.posted = new Set(manifest.state.posted ?? []);
+  state.viewed = new Set(Object.keys(saved.viewed ?? {}));
+  state.comments = new Map(Object.entries(saved.comments ?? {}));
+  state.stale = new Set(saved.stale ?? []);
+  state.unsent = new Set(saved.unsent ?? []);
+  state.posted = new Set(saved.posted ?? []);
   state.threads = manifest.threads ?? {};
   state.pr = manifest.pr ?? null;
   state.prState = manifest.prState ?? null;
@@ -55,12 +64,15 @@ const init = async () => {
      never leave this machine. Viewed stays either way: it is how a range is worked
      through, pull request or not. */
   dom.commentSection.hidden = !state.pr || !state.viewer;
+  /* Read only, so the section shows threads and nothing to type into. renderThreads
+     opens it on a screenshot that has some. */
+  dom.comment.hidden = state.static;
   renderPublish();
 
   /* Only the screenshots that lost their tick are worth saying out loud. Carrying
      progress over is the expected outcome and needs no announcement; ticks vanishing
      without explanation does. */
-  const { reset = 0 } = manifest.carriedOver ?? {};
+  const { reset = 0 } = local ?? manifest.carriedOver ?? {};
   if (reset) {
     dom.carried.hidden = false;
     dom.carried.textContent = `${reset} ${
@@ -97,12 +109,33 @@ const init = async () => {
      reported without waiting for the reviewer to mark something. */
   checkFreshness();
 
+  /* Not awaited: comments arrive whenever GitHub answers, and the prefetch below
+     shouldn't wait on them. */
+  if (state.static && manifest.pullRequest) {
+    loadThreads(manifest.pullRequest);
+  }
+
+  /* A deployment replaced by a newer push serves only that push's images, so one that
+     fails to load is often the first sign of it. An empty src fires error too, and is
+     only a side with nothing to show. */
+  if (state.static) {
+    dom.stage.addEventListener(
+      'error',
+      (event) => {
+        if (/** @type {HTMLImageElement} */ (event.target).getAttribute('src')) {
+          checkFreshness();
+        }
+      },
+      true
+    );
+  }
+
   /* Warm the cache so stepping through hundreds of screenshots stays instant. */
   const queue = state.entries
     .flatMap((entry) => [
-      entry.status === 'A' ? null : blobUrl('expected', entry.path),
-      entry.status === 'D' ? null : blobUrl('actual', entry.path),
-      entry.comparable ? blobUrl('diff', entry.path) : null,
+      entry.status === 'A' ? null : blobUrl('expected', entry),
+      entry.status === 'D' ? null : blobUrl('actual', entry),
+      entry.comparable ? blobUrl('diff', entry) : null,
     ])
     .filter(Boolean);
 

@@ -68,6 +68,7 @@ const IDS = /** @type {const} */ ([
   'commentState',
   'deleteComment',
   'threads',
+  'threadsFailed',
 ]);
 
 /**

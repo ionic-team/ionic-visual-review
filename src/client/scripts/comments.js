@@ -16,6 +16,11 @@
  *   after confirming, and stays here if GitHub refuses.
  * - Teammates' comments are read only, with resolved and outdated threads marked.
  *   Their HTML is rebuilt from an allowlist: no images, and only http(s) links.
+ * - A static export has no comment box. It loads the pull request's comments from
+ *   GitHub's public API when the page opens, one request per 100 comments, and shows
+ *   the section only on a screenshot that has some. That API can't say whether a
+ *   thread is resolved, so none is marked resolved. If GitHub refuses, the sidebar
+ *   says so.
  */
 import { dom } from './dom.js';
 import { refreshRow } from './list.js';
@@ -112,6 +117,10 @@ const sanitize = (html) => {
 export const renderThreads = () => {
   const threads = state.threads[state.current] ?? [];
   dom.threads.hidden = threads.length === 0;
+  /* With no comment box, the section is only these threads. */
+  if (state.static) {
+    dom.commentSection.hidden = threads.length === 0;
+  }
 
   if (threads.length === 0) {
     return;
@@ -167,6 +176,85 @@ export const renderThreads = () => {
   }
 
   dom.threads.replaceChildren(...nodes);
+};
+
+/* Anonymous reads allow 60 an hour per network, which an office can share. */
+const LIMITED = 'GitHub is limiting requests from this network, so comments are not shown. Reload later to try again.';
+const UNAVAILABLE = 'Comments could not be loaded from GitHub. Reload to try again.';
+
+/**
+ * Loads a pull request's review comments for a static export, from GitHub's public API,
+ * and shows them on the screenshots in this review.
+ * @param {{ repo: string, number: number }} pullRequest
+ * @returns {Promise<void>}
+ */
+export const loadThreads = async ({ repo, number }) => {
+  const inReview = new Set(state.entries.map((entry) => entry.path));
+  /* Each thread by the id of its first comment, which is what a reply names. */
+  const roots = new Map();
+
+  try {
+    /* A guard rather than a limit anyone should reach: 20 pages is 2,000 comments. */
+    for (let page = 1; page <= 20; page++) {
+      const response = await fetch(
+        `https://api.github.com/repos/${repo}/pulls/${number}/comments?per_page=100&page=${page}`,
+        { headers: { accept: 'application/vnd.github.html+json' } }
+      );
+      if (!response.ok) {
+        throw new Error(response.status === 403 || response.status === 429 ? LIMITED : UNAVAILABLE);
+      }
+
+      const comments = await response.json();
+
+      /* Oldest first, and a reply always names its thread's first comment, so the
+         thread exists by the time its replies arrive. */
+      for (const comment of comments) {
+        const root = roots.get(comment.in_reply_to_id);
+        if (!root && !inReview.has(comment.path)) {
+          continue;
+        }
+
+        const item = {
+          author: comment.user?.login ?? 'unknown',
+          body: comment.body_html,
+          url: comment.html_url,
+          createdAt: comment.created_at,
+          mine: false,
+        };
+
+        if (root) {
+          root.thread.comments.push(item);
+        } else {
+          /* GitHub moves a comment to each new push until the file changes under it,
+             so one left on an earlier commit is outdated. */
+          roots.set(comment.id, {
+            path: comment.path,
+            thread: { resolved: false, outdated: comment.commit_id !== state.head, comments: [item] },
+          });
+        }
+      }
+
+      if (comments.length < 100) {
+        break;
+      }
+    }
+  } catch (error) {
+    /* Anything but the rate limit, offline included, gets the plain sentence. */
+    dom.threadsFailed.hidden = false;
+    dom.threadsFailed.textContent = error.message === LIMITED ? LIMITED : UNAVAILABLE;
+    return;
+  }
+
+  const threads = {};
+  for (const { path, thread } of roots.values()) {
+    (threads[path] ??= []).push(thread);
+  }
+  state.threads = threads;
+
+  for (const path of Object.keys(threads)) {
+    refreshRow(path);
+  }
+  renderThreads();
 };
 
 /**
