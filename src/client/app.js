@@ -3,6 +3,8 @@
  *
  * - The comment box, teammates' comments and the c shortcut appear only for a pull
  *   request with gh signed in. Viewed marks work in every case.
+ * - A static export shows teammates' comments, read only, when its --url named a pull
+ *   request. It never has a comment box.
  * - If a push changed screenshots since they were marked viewed, the sidebar says how
  *   many lost their mark.
  * - The orphans only and encoding only checkboxes appear only when there is one.
@@ -11,7 +13,7 @@
  * - Every image is prefetched after the first render, so stepping through stays
  *   instant.
  */
-import { renderPublish, wireComments } from './scripts/comments.js';
+import { loadThreads, renderPublish, wireComments } from './scripts/comments.js';
 import { wireControls } from './scripts/controls.js';
 import { dom } from './scripts/dom.js';
 import { indexGroups, reencodedOnly } from './scripts/entries.js';
@@ -62,6 +64,9 @@ const init = async () => {
      never leave this machine. Viewed stays either way: it is how a range is worked
      through, pull request or not. */
   dom.commentSection.hidden = !state.pr || !state.viewer;
+  /* Read only, so the section shows threads and nothing to type into. renderThreads
+     opens it on a screenshot that has some. */
+  dom.comment.hidden = state.static;
   renderPublish();
 
   /* Only the screenshots that lost their tick are worth saying out loud. Carrying
@@ -103,6 +108,12 @@ const init = async () => {
   /* Asked once the list is up, so a push that landed before this session opened is
      reported without waiting for the reviewer to mark something. */
   checkFreshness();
+
+  /* Not awaited: comments arrive whenever GitHub answers, and the prefetch below
+     shouldn't wait on them. */
+  if (state.static && manifest.pullRequest) {
+    loadThreads(manifest.pullRequest);
+  }
 
   /* A deployment replaced by a newer push serves only that push's images, so one that
      fails to load is often the first sign of it. An empty src fires error too, and is

@@ -25,7 +25,15 @@ describe('export: static site', () => {
 
   test('should write the page with every image the manifest points to', async () => {
     const out = join(root, 'site');
-    await exportSite([...range(), '--out', out, '--label', '#1 badge']);
+    await exportSite([
+      ...range(),
+      '--out',
+      out,
+      '--label',
+      '#1 badge',
+      '--url',
+      'https://github.com/ionic-team/ionic-framework/pull/1',
+    ]);
 
     const manifest = JSON.parse(readFileSync(join(out, 'manifest.json'), 'utf8'));
     const head = execFileSync('git', ['rev-parse', 'feature'], { cwd: fixture.dir }).toString().trim();
@@ -33,6 +41,7 @@ describe('export: static site', () => {
     assert.equal(manifest.static, true);
     assert.equal(manifest.head, head);
     assert.equal(manifest.range.label, '#1 badge');
+    assert.deepEqual(manifest.pullRequest, { repo: 'ionic-team/ionic-framework', number: 1 });
     assert.equal(manifest.entries.length, 6);
     assert.deepEqual(JSON.parse(readFileSync(join(out, 'head.json'), 'utf8')), { head });
 
@@ -54,12 +63,25 @@ describe('export: static site', () => {
     assert.equal(renamed.expectedSha, renamed.actualSha);
   });
 
-  test('should refuse a folder that already has files in it', async () => {
+  test('should replace an earlier export', async () => {
+    const out = join(root, 'again');
+    await exportSite([...range(), '--out', out]);
+    writeFileSync(join(out, 'stale.txt'), 'left over');
+
+    await exportSite([...range(), '--out', out]);
+
+    assert.equal(existsSync(join(out, 'stale.txt')), false);
+    /* No --url, so no pull request to read comments from. */
+    assert.equal(JSON.parse(readFileSync(join(out, 'manifest.json'), 'utf8')).pullRequest, null);
+    assert.equal(JSON.parse(readFileSync(join(out, 'manifest.json'), 'utf8')).entries.length, 6);
+  });
+
+  test('should refuse a folder that holds anything but an export', async () => {
     const out = join(root, 'taken');
     mkdirSync(out);
     writeFileSync(join(out, 'keep.txt'), 'mine');
 
-    await assert.rejects(exportSite([...range(), '--out', out]), /already has files in it/);
+    await assert.rejects(exportSite([...range(), '--out', out]), /not an export/);
     assert.equal(readFileSync(join(out, 'keep.txt'), 'utf8'), 'mine');
   });
 

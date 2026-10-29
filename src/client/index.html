@@ -53,6 +53,7 @@
         </div>
         <p id="carried" class="carried" hidden></p>
         <p id="pushed" class="pushed" hidden></p>
+        <p id="threadsFailed" class="threads-failed" hidden></p>
         <div id="facets" class="facets mono"></div>
         <nav id="list" class="list"></nav>
       </aside>
@@ -231,6 +232,10 @@
           <li>
             Signed out, a new push is noticed more slowly, because GitHub allows far fewer anonymous requests and the
             check is spaced out to stay within them.
+          </li>
+          <li>
+            A hosted review shows the pull request's comments, read anonymously from GitHub when the page opens, but has
+            no comment box. It can't tell which threads are resolved, so none is marked resolved.
           </li>
         </ul>
         <h2>Keyboard</h2>

@@ -2,14 +2,17 @@
  * Writes a review as a static site, for hosting where there is no clone to read from.
  *
  * The page is the same one the server sends. What it loses is everything that needs
- * the server: viewed marks stay in the browser, there are no comments, and a newer
+ * the server: viewed marks stay in the browser, comments are read only, and a newer
  * push is noticed by reading head.json again.
  *
  * - Takes a range, never a pull request. Whoever runs it already knows both commits,
  *   and the export never contacts GitHub.
+ * - A --url naming a pull request is where the page loads comments from, through
+ *   GitHub's public API when it opens. Any other --url is only the header link.
  * - Images are named by blob id and diffs by the pair, so two screenshots with the
  *   same bytes are written once.
- * - Refuses a folder that already has files in it, rather than mixing two reviews.
+ * - Replaces an earlier export in --out, but refuses a folder holding anything else,
+ *   since --out can be any path.
  * - A range with no changed screenshots writes nothing and still succeeds, so a
  *   workflow can run it on every push and skip the deploy when the folder is missing.
  *
@@ -18,7 +21,7 @@
  *   npm run export -- --repo ~/code/ionic-framework --base <sha> --head <sha> --out dist
  *   npm run export -- --base <sha> --head <sha> --label '#31321 fix(item): ...' --url <pull request>
  */
-import { copyFile, cp, mkdir, readdir, writeFile } from 'node:fs/promises';
+import { copyFile, cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 
@@ -35,7 +38,8 @@ Write a review as a static site.
   --path <spec>     Narrow the set with a git pathspec.
   --out <dir>       Where to write the site. Defaults to dist.
   --label <text>    The header title. Defaults to the two refs.
-  --url <url>       Where the header title links to.
+  --url <url>       Where the header title links to. A pull request's URL
+                    also shows its comments.
 `;
 
 /**
@@ -46,6 +50,29 @@ Write a review as a static site.
 const shown = (dir) => {
   const path = relative(process.cwd(), dir);
   return path && !path.startsWith('..') ? path : dir;
+};
+
+/**
+ * The pull request a --url points at, for the page to load comments from.
+ * @param {string | undefined} url
+ * @returns {{ repo: string, number: number } | null} Null for any other URL.
+ */
+const pullRequestOf = (url) => {
+  const match = url?.match(/^https:\/\/github\.com\/([\w.-]+\/[\w.-]+)\/pull\/(\d+)\/?$/);
+  return match ? { repo: match[1], number: Number(match[2]) } : null;
+};
+
+/**
+ * Whether a folder holds an earlier export, the only thing replaced without asking.
+ * @param {string} dir
+ * @returns {Promise<boolean>}
+ */
+const isExport = async (dir) => {
+  try {
+    return JSON.parse(await readFile(join(dir, 'manifest.json'), 'utf8')).static === true;
+  } catch {
+    return false;
+  }
 };
 
 /**
@@ -84,13 +111,20 @@ export const exportSite = async (argv) => {
   }
 
   const out = resolve(args.out);
-  if ((await readdir(out).catch(() => [])).length > 0) {
-    throw new Error(`${shown(out)} already has files in it. Pass an empty --out.`);
+  const replacing = (await readdir(out).catch(() => [])).length > 0;
+  if (replacing && !(await isExport(out))) {
+    throw new Error(`${shown(out)} has files that are not an export. Pass an empty --out.`);
   }
 
   const cwd = await findRepo(args);
   const range = await resolveRange({ base: args.base, head: args.head }, cwd);
   const pathspec = args.path ?? DEFAULT_PATHSPEC;
+
+  /* Cleared before building, so a range with nothing to show leaves no folder instead
+     of the last review. */
+  if (replacing) {
+    await rm(out, { recursive: true, force: true });
+  }
 
   const reader = new BlobReader(cwd);
 
@@ -131,6 +165,7 @@ export const exportSite = async (argv) => {
           pathspec,
         },
         blobBase: snapshots.blobBase,
+        pullRequest: pullRequestOf(args.url),
         head: snapshots.headSha,
         counts: snapshots.counts,
         entries: snapshots.entries,

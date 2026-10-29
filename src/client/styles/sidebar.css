@@ -1,4 +1,4 @@
-/* Sidebar: filter, checkboxes, facets, and the push and carried-over banners. */
+/* Sidebar: filter, checkboxes, facets, and the push, carried-over and comments banners. */
 
 .sidebar {
   display: flex;
@@ -116,7 +116,8 @@
 }
 
 .carried,
-.pushed {
+.pushed,
+.threads-failed {
   margin: 0;
 
   padding: 7px 12px;
@@ -130,7 +131,8 @@
 }
 
 .carried[hidden],
-.pushed[hidden] {
+.pushed[hidden],
+.threads-failed[hidden] {
   display: none;
 }
 

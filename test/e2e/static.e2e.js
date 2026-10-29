@@ -21,7 +21,18 @@ test.beforeAll(async () => {
   fixture = createFixtureRepo();
   root = mkdtempSync(join(tmpdir(), 'visual-review-static-'));
   out = join(root, 'site');
-  await exportSite(['--repo', fixture.dir, '--base', 'main', '--head', 'feature', '--out', out]);
+  await exportSite([
+    '--repo',
+    fixture.dir,
+    '--base',
+    'main',
+    '--head',
+    'feature',
+    '--out',
+    out,
+    '--url',
+    'https://github.com/ionic-team/ionic-framework/pull/1',
+  ]);
 
   const serve = sirv(out, { dev: true });
   server = createServer((req, res) =>
@@ -39,7 +50,25 @@ test.afterAll(() => {
   rmSync(root, { recursive: true, force: true });
 });
 
+/**
+ * A review comment as GitHub's REST API returns it, trimmed to what the page reads.
+ * @param {{ id: number, replyTo?: number, commit: string, author: string, body: string }} comment
+ */
+const restComment = ({ id, replyTo, commit, author, body }) => ({
+  id,
+  in_reply_to_id: replyTo ?? null,
+  path: FIXTURE.modified,
+  commit_id: commit,
+  user: { login: author },
+  body_html: `<p>${body}</p>`,
+  html_url: `https://github.com/ionic-team/ionic-framework/pull/1#discussion_r${id}`,
+  created_at: '2026-10-28T00:00:00Z',
+});
+
 test.beforeEach(async ({ page }) => {
+  /* The page reads comments from GitHub itself. No pull request has any unless a test
+     says so, and none of these requests leaves the machine. */
+  await page.route('https://api.github.com/**', (route) => route.fulfill({ json: [] }));
   await page.goto(address);
   await expect(page.locator('.row').first()).toBeVisible();
 });
@@ -64,6 +93,39 @@ test('should keep a viewed mark in the browser across a reload', async ({ page }
 
   await page.reload();
   await expect(page.locator('#progressLabel')).toHaveText('1 / 6 viewed');
+});
+
+test('should show the pull request comments without a comment box', async ({ page }) => {
+  const { head } = JSON.parse(readFileSync(join(out, 'head.json'), 'utf8'));
+  await page.route('https://api.github.com/**', (route) =>
+    route.fulfill({
+      json: [
+        restComment({ id: 1, commit: head, author: 'teammate', body: 'Is the band meant to be green?' }),
+        restComment({ id: 2, replyTo: 1, commit: head, author: 'author', body: 'Yes.' }),
+        restComment({ id: 3, commit: 'a'.repeat(40), author: 'teammate', body: 'On an earlier push.' }),
+      ],
+    })
+  );
+  await page.reload();
+
+  const row = page.locator(`.row[data-path="${FIXTURE.modified}"]`);
+  await expect(row.locator('.note')).toHaveClass(/theirs/);
+  await row.click();
+
+  await expect(page.locator('#threads .thread-comment')).toHaveText([
+    /teammate.*green/,
+    /author.*Yes/,
+    /teammate.*earlier/,
+  ]);
+  await expect(page.locator('#threads .thread-tag')).toHaveText(['outdated']);
+  await expect(page.locator('#comment')).toBeHidden();
+});
+
+test('should say when GitHub refuses to send the comments', async ({ page }) => {
+  await page.route('https://api.github.com/**', (route) => route.fulfill({ status: 403, json: {} }));
+  await page.reload();
+
+  await expect(page.locator('#threadsFailed')).toContainText('limiting requests');
 });
 
 test('should say a newer push changed the snapshot just marked', async ({ page }) => {

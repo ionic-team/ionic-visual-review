@@ -42,14 +42,16 @@ npm run export -- --base origin/main --head my-branch
 npm run export -- --base <sha> --head <sha> --out dist --label '#31321 fix(item): ...' --url <pull request>
 ```
 
-| Option                          |                                                     |
-| ------------------------------- | --------------------------------------------------- |
-| `--base <ref>`, `--head <ref>`  | Required. A pull request number is not accepted.    |
-| `--out <dir>`                   | Defaults to `dist`. Must be empty or missing.       |
-| `--label <text>`, `--url <url>` | The header title and its link. Default to the refs. |
-| `--repo`, `--path`              | Same as above.                                      |
+| Option                          |                                                                                           |
+| ------------------------------- | ----------------------------------------------------------------------------------------- |
+| `--base <ref>`, `--head <ref>`  | Required. A pull request number is not accepted.                                          |
+| `--out <dir>`                   | Defaults to `dist`. An earlier export there is replaced, but any other files are refused. |
+| `--label <text>`, `--url <url>` | The header title and its link. Default to the refs.                                       |
+| `--repo`, `--path`              | Same as above.                                                                            |
 
-The exported page is read-only. Viewed marks stay in the browser, comments are hidden, and a newer push is noticed when the deployment's `head.json` names a different commit. A range with no changed screenshots writes nothing and exits successfully.
+The exported page is read-only. Viewed marks stay in the browser, and a newer push is noticed when the deployment's `head.json` names a different commit.
+
+When `--url` is a pull request, the page loads its comments from GitHub's public API each time it opens, with no comment box. That API allows 60 requests an hour per network, one request per 100 comments, and can't say whether a thread is resolved. A range with no changed screenshots writes nothing and exits successfully.
 
 ### Why it needs a local clone
 
