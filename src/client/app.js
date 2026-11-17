@@ -1,11 +1,12 @@
 /*
  * Entry point for the page: wires the controls, loads the review and renders it.
  *
- * - The comment box, teammates' comments and the c shortcut appear only for a pull
- *   request with gh signed in. Viewed marks work in every case.
+ * - The comment box and the c shortcut appear only for a pull request. Teammates'
+ *   comments and Post also need gh signed in. Viewed marks work in every case.
  * - If a push changed screenshots since they were marked viewed, the sidebar says how
  *   many lost their mark.
  * - The orphans only and encoding only checkboxes appear only when there is one.
+ *   Commented only also appears while a comment can be written.
  * - A newer push is checked for on load and whenever the tab regains focus.
  * - Every image is prefetched after the first render, so stepping through stays
  *   instant.
@@ -13,7 +14,7 @@
 import { renderPublish, wireComments } from './scripts/comments.js';
 import { wireControls } from './scripts/controls.js';
 import { dom } from './scripts/dom.js';
-import { indexGroups, reencodedOnly } from './scripts/entries.js';
+import { commented, indexGroups, reencodedOnly } from './scripts/entries.js';
 import { applyFilter, renderFacets, restoreGrouping } from './scripts/filters.js';
 import { wireKeyboard } from './scripts/keyboard.js';
 import { blobUrl } from './scripts/links.js';
@@ -47,14 +48,15 @@ const init = async () => {
   state.posted = new Set(manifest.state.posted ?? []);
   state.threads = manifest.threads ?? {};
   state.pr = manifest.pr ?? null;
+  state.prUrl = state.pr ? (manifest.range.url ?? null) : null;
   state.prState = manifest.prState ?? null;
   state.viewer = manifest.viewer ?? null;
 
-  /* A comment exists to be posted on a pull request. Without one, or without an account
-     to post as, there is nowhere for it to go, so the box would only collect notes that
-     never leave this machine. Viewed stays either way: it is how a range is worked
-     through, pull request or not. */
-  dom.commentSection.hidden = !state.pr || !state.viewer;
+  /* A comment exists to end up on a pull request. Without one there is nowhere for it
+     to go, so the box would only collect notes that never leave this machine. Signed
+     out, it still has a way there: Copy, then paste it into the pull request. Viewed
+     stays either way: it is how a range is worked through, pull request or not. */
+  dom.commentSection.hidden = !state.pr;
   renderPublish();
 
   /* Only the screenshots that lost their tick are worth saying out loud. Carrying
@@ -80,6 +82,9 @@ const init = async () => {
      is left out of the facet bar. */
   dom.orphansOnlyLabel.hidden = !state.entries.some((entry) => entry.orphaned);
   dom.reencodedOnlyLabel.hidden = !state.entries.some(reencodedOnly);
+  /* Also offered while a comment can be written, so the first one has somewhere to be
+     found without a reload. */
+  dom.commentedOnlyLabel.hidden = dom.commentSection.hidden && !state.entries.some(commented);
 
   renderFacets();
 

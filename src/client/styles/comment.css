@@ -1,8 +1,14 @@
-/* Comment box, teammate threads, and the publish and delete buttons. */
+/* Comment box, teammate threads, and the publish, copy and delete buttons. */
 
-.delete-comment {
+.comment-actions {
+  display: flex;
+
   margin-left: auto;
 
+  gap: 6px;
+}
+
+.comment-action {
   padding: 1px 8px;
 
   border: 1px solid var(--line);
@@ -17,13 +23,19 @@
   cursor: pointer;
 }
 
+.comment-action:hover:not(:disabled) {
+  border-color: var(--accent);
+
+  color: var(--accent);
+}
+
 .delete-comment:hover:not(:disabled) {
   border-color: var(--removed);
 
   color: var(--removed);
 }
 
-.delete-comment[hidden] {
+.comment-action[hidden] {
   display: none;
 }
 
@@ -76,9 +88,9 @@
 
   font-size: 11px;
   font-weight: 500;
-  /* An explicit gap, because the delete button's auto margin swallows the free space
-     that space-between would otherwise distribute, leaving the label and the status
-     touching the moment that button appears. */
+  /* An explicit gap, because the buttons' auto margin swallows the free space that
+     space-between would otherwise distribute, leaving the label and the status
+     touching the moment a button appears. */
   gap: 10px;
 }
 

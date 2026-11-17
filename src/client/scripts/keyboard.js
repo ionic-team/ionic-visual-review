@@ -59,7 +59,7 @@ export const wireKeyboard = () => {
         applyZoom();
       },
       c: () => {
-        if (state.pr && state.viewer) {
+        if (state.pr) {
           dom.comment.focus();
         }
       },

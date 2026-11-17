@@ -13,7 +13,7 @@
  *   shortcuts keep working.
  * - Clicking outside the help dialog closes it. Fit zoom recalculates on resize.
  */
-import { deleteCurrentComment, publishComments } from './comments.js';
+import { copyCurrentComment, deleteCurrentComment, publishComments } from './comments.js';
 import { dom } from './dom.js';
 import { entryFor, setKeyOf } from './entries.js';
 import { GROUP_KEY, applyFilter, refilter, renderFacets } from './filters.js';
@@ -125,6 +125,8 @@ export const wireControls = () => {
 
   dom.reencodedOnly.addEventListener('change', refilter);
 
+  dom.commentedOnly.addEventListener('change', refilter);
+
   /* Focus would otherwise stay on the checkbox, where the review shortcuts are treated
      as typing and swallowed. */
   dom.hideViewed.addEventListener('change', () => {
@@ -136,6 +138,8 @@ export const wireControls = () => {
     applyTheme(/** @type {import('./theme.js').Theme} */ (dom.theme.value));
     dom.theme.blur();
   });
+
+  dom.copyComment.addEventListener('click', copyCurrentComment);
 
   dom.deleteComment.addEventListener('click', deleteCurrentComment);
 

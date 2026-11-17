@@ -37,6 +37,15 @@ export const worthComparing = (entry) => Boolean(entry?.comparable) && entry.rat
 export const reencodedOnly = (entry) =>
   Boolean(entry?.comparable) && entry.ratio === 0 && entry.expectedSha !== entry.actualSha;
 
+/**
+ * Whether anyone has said something about a screenshot: a comment of mine, posted or
+ * not, or a thread on the pull request.
+ * @param {Entry | undefined} entry
+ * @returns {boolean}
+ */
+export const commented = (entry) =>
+  Boolean(entry) && (Boolean(state.comments.get(entry.path)) || (state.threads[entry.path] ?? []).length > 0);
+
 /** Indexes every entry by directory and by browser set. */
 export const indexGroups = () => {
   state.groups = new Map();

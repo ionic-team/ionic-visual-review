@@ -1,8 +1,10 @@
 /*
- * Comment box, teammates' comments, posting and deleting.
+ * Comment box, teammates' comments, posting, copying and deleting.
  *
- * - Shown only for a pull request with gh signed in. Without either, there is
- *   nowhere for a comment to go, so the whole section is hidden.
+ * - Shown only for a pull request. Without one there is nowhere for a comment to go,
+ *   so the whole section is hidden.
+ * - Signed out, comments still save locally but Post is hidden. Copy puts the box's
+ *   text on the clipboard to paste into the pull request by hand.
  * - A comment saves locally 400 ms after typing stops. Nothing reaches GitHub until
  *   Post.
  * - Post sends every unsent comment as one review, after confirming. On a merged or
@@ -170,19 +172,40 @@ export const renderThreads = () => {
 };
 
 /**
- * Shows Delete when there is a comment, labelled for the pull request when it is posted
- * there.
+ * Shows Copy when the box has text, and Delete when there is a comment, labelled for the
+ * pull request when it is posted there.
  */
-export const renderDelete = () => {
+export const renderActions = () => {
   const path = state.current;
   const published = state.posted.has(path);
   const has = Boolean(state.comments.get(path)) || published;
 
+  dom.copyComment.hidden = !dom.comment.value.trim();
   dom.deleteComment.hidden = !has;
   dom.deleteComment.textContent = published ? 'Delete from PR' : 'Delete';
   dom.deleteComment.title = published
     ? `Removes this comment from #${state.pr} as well as here`
     : 'Clears this comment';
+};
+
+let copiedTimer = null;
+
+/**
+ * Puts the comment on the clipboard, for pasting into the pull request by hand when
+ * there is no account to post it with.
+ * @returns {Promise<void>}
+ */
+export const copyCurrentComment = async () => {
+  try {
+    await navigator.clipboard.writeText(dom.comment.value);
+    dom.copyComment.textContent = 'Copied';
+    clearTimeout(copiedTimer);
+    copiedTimer = setTimeout(() => {
+      dom.copyComment.textContent = 'Copy';
+    }, 1500);
+  } catch (error) {
+    dom.commentState.textContent = `Could not copy: ${error.message ?? error}`;
+  }
 };
 
 /**
@@ -225,12 +248,12 @@ export const deleteCurrentComment = async () => {
     refreshRow(path);
     renderPublish();
   } catch (error) {
-    /* Reported on the status line, not the button's title: renderDelete rewrites that
+    /* Reported on the status line, not the button's title: renderActions rewrites that
        title on the way out, so a failure put there would vanish silently. */
     dom.commentState.textContent = `Could not delete: ${error.message ?? error}`;
   } finally {
     dom.deleteComment.disabled = false;
-    renderDelete();
+    renderActions();
   }
 };
 
@@ -284,7 +307,7 @@ export const publishComments = async () => {
       }
     }
     renderPublish();
-    renderDelete();
+    renderActions();
 
     if (result.url) {
       window.open(result.url, '_blank', 'noreferrer');
@@ -320,7 +343,7 @@ export const wireComments = () => {
       state.unsent.delete(path);
     }
     renderPublish();
-    renderDelete();
+    renderActions();
 
     dom.commentState.textContent = 'Saving…';
     clearTimeout(commentTimer);

@@ -5,14 +5,15 @@
  *   Values combine within a row, and a screenshot must match every row in use.
  * - A row with only one value is left out, except status. Theme is left out when it
  *   repeats mode, which is always the case on main.
- * - Text, facets, orphans only and encoding only decide what a directory covers.
+ * - Text, facets, orphans only, encoding only and commented only decide what a
+ *   directory covers. Commented only counts my comments and teammates' threads.
  *   Hide viewed just hides rows, so directory counts stay whole.
  * - One row per test collapses each browser set to one row, led by Chrome, and is
  *   remembered in this browser.
  * - When the open screenshot is filtered out, the first visible one opens instead.
  */
 import { BROWSER_ORDER, STATUS_COUNT_LABEL, dom } from './dom.js';
-import { reencodedOnly, setKeyOf, setLead, shortBrowser } from './entries.js';
+import { commented, reencodedOnly, setKeyOf, setLead, shortBrowser } from './entries.js';
 import { renderList } from './list.js';
 import { select } from './stage.js';
 import { state } from './state.js';
@@ -127,6 +128,10 @@ export const applyFilter = () => {
         }
 
         if (dom.reencodedOnly.checked && !reencodedOnly(entry)) {
+          return false;
+        }
+
+        if (dom.commentedOnly.checked && !commented(entry)) {
           return false;
         }
 
