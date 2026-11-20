@@ -49,6 +49,9 @@
             <label id="reencodedOnlyLabel" class="check" hidden
               ><input id="reencodedOnly" type="checkbox" /> Encoding differs only</label
             >
+            <label id="commentedOnlyLabel" class="check" hidden
+              ><input id="commentedOnly" type="checkbox" /> Commented only</label
+            >
           </div>
         </div>
         <p id="carried" class="carried" hidden></p>
@@ -63,7 +66,7 @@
           <span id="crumbGroup" class="mono dim"></span>
           <a id="crumbTest" class="test-link" target="_blank" rel="noreferrer" hidden></a>
           <span id="crumbOrphan" class="orphan" hidden><span class="warn"></span>No test writes this screenshot</span>
-          <span id="crumbStem" class="mono strong"></span>
+          <a id="crumbStem" class="stem-link mono strong" target="_blank" rel="noreferrer"></a>
           <span id="crumbRenamed" class="renamed-from" hidden></span>
           <span id="crumbBrowser" class="chip"></span>
           <span id="crumbMeta" class="mono dim"></span>
@@ -141,7 +144,10 @@
           <div class="comment-head">
             <span>Comment</span>
             <span id="commentState" class="dim"></span>
-            <button id="deleteComment" class="delete-comment" hidden>Delete</button>
+            <span class="comment-actions">
+              <button id="copyComment" class="comment-action" hidden>Copy</button>
+              <button id="deleteComment" class="comment-action delete-comment" hidden>Delete</button>
+            </span>
           </div>
           <div id="threads" class="threads" hidden></div>
           <textarea id="comment" rows="3" placeholder="Notes on this screenshot. Saved locally as you type."></textarea>
@@ -224,8 +230,12 @@
           </li>
           <li>
             Signed out, a pull request still opens and every screenshot is there, read anonymously from GitHub. What
-            needs an account is switched off: comments, and the copy of the viewed state that reaches the Files tab.
-            Comments left by teammates do not appear either.
+            needs an account is switched off: posting comments, and the copy of the viewed state that reaches the Files
+            tab. Comments left by teammates do not appear either.
+          </li>
+          <li>
+            Signed out, comments are still written and saved locally. <b>Copy</b> puts one on the clipboard, and the
+            screenshot's name above the image opens it in the Files tab to paste it on.
           </li>
           <li>
             Signed out, a new push is noticed more slowly, because GitHub allows far fewer anonymous requests and the
@@ -247,7 +257,7 @@
           <dt><kbd>z</kbd></dt>
           <dd>Cycle zoom</dd>
           <dt><kbd>c</kbd></dt>
-          <dd>Focus the comment box, when there is a pull request to post to</dd>
+          <dd>Focus the comment box, when reviewing a pull request</dd>
           <dt><kbd>/</kbd></dt>
           <dd>Focus the filter</dd>
           <dt><kbd>u</kbd></dt>

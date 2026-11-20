@@ -21,6 +21,8 @@ const IDS = /** @type {const} */ ([
   'orphansOnlyLabel',
   'reencodedOnly',
   'reencodedOnlyLabel',
+  'commentedOnly',
+  'commentedOnlyLabel',
   'facets',
   'carried',
   'pushed',
@@ -66,6 +68,7 @@ const IDS = /** @type {const} */ ([
   'comment',
   'commentSection',
   'commentState',
+  'copyComment',
   'deleteComment',
   'threads',
 ]);
@@ -73,9 +76,9 @@ const IDS = /** @type {const} */ ([
 /**
  * Every id as an HTMLElement, narrowed where scripts use more than that offers.
  * @typedef {Record<(typeof IDS)[number], HTMLElement>
- *   & Record<'rangeLabel' | 'crumbTest', HTMLAnchorElement>
- *   & Record<'helpButton' | 'publish' | 'deleteComment', HTMLButtonElement>
- *   & Record<'groupBrowsers' | 'filter' | 'hideViewed' | 'orphansOnly' | 'reencodedOnly' | 'viewed' | 'onion', HTMLInputElement>
+ *   & Record<'rangeLabel' | 'crumbTest' | 'crumbStem', HTMLAnchorElement>
+ *   & Record<'helpButton' | 'publish' | 'copyComment' | 'deleteComment', HTMLButtonElement>
+ *   & Record<'groupBrowsers' | 'filter' | 'hideViewed' | 'orphansOnly' | 'reencodedOnly' | 'commentedOnly' | 'viewed' | 'onion', HTMLInputElement>
  *   & Record<'sxsExpected' | 'sxsActual' | 'sliderExpected' | 'sliderActual' | 'onionSizer' | 'onionExpected' | 'onionActual' | 'diffImage', HTMLImageElement>
  *   & { help: HTMLDialogElement, theme: HTMLSelectElement, comment: HTMLTextAreaElement }} Dom
  */

@@ -1,10 +1,13 @@
 import { expect, test } from '@playwright/test';
 import { spawn } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 import { FIXTURE, createFixtureRepo } from '../fixtures/repo.js';
 
 const CLI = fileURLToPath(new URL('../../src/cli.mjs', import.meta.url));
+
+const PR_URL = 'https://github.com/ionic-team/ionic-framework/pull/1';
 
 /* One server for the file, so the tests share it and run in order. */
 test.describe.configure({ mode: 'serial' });
@@ -109,4 +112,57 @@ test('should mark a row viewed from its checkbox without opening it', async ({ p
   await page.waitForTimeout(400);
   await page.reload();
   await expect(page.locator('.row').nth(1).locator('.row-box')).toBeChecked();
+});
+
+test('should narrow to commented snapshots', async ({ page }) => {
+  /* A range review has no comment box, so the checkbox waits for a saved comment. */
+  await expect(page.getByLabel('Commented only')).toBeHidden();
+
+  await page.request.post(`${address}/api/state`, { data: { path: FIXTURE.added, comment: 'Looks off' } });
+  /* The store writes after a short debounce, so give it time before reloading. */
+  await page.waitForTimeout(400);
+  await page.reload();
+
+  await page.getByLabel('Commented only').check();
+  await expect(page.locator('.row')).toHaveCount(1);
+  await expect(page.locator(`.row[data-path="${FIXTURE.added}"]`)).toBeVisible();
+});
+
+/**
+ * Makes the page believe it is reviewing pull request #1 signed out: a manifest with a
+ * pr and no viewer. The fixture can't open a real one offline, so the manifest is
+ * rewritten instead.
+ * @param {import('@playwright/test').Page} page
+ */
+const signOutOfPullRequest = async (page) => {
+  await page.route('**/api/manifest', async (route) => {
+    const manifest = await (await route.fetch()).json();
+    manifest.pr = 1;
+    manifest.viewer = null;
+    manifest.range.url = PR_URL;
+    manifest.state.comments = { [FIXTURE.modified]: 'Band is too tall' };
+    await route.fulfill({ json: manifest });
+  });
+  await page.reload();
+};
+
+test('should copy a comment when signed out of a pull request', async ({ page }) => {
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await signOutOfPullRequest(page);
+
+  await page.locator(`.row[data-path="${FIXTURE.modified}"]`).click();
+  await expect(page.locator('#publish')).toBeHidden();
+
+  await page.getByRole('button', { name: 'Copy' }).click();
+  await expect(page.locator('#copyComment')).toHaveText('Copied');
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('Band is too tall');
+});
+
+test('should link the open screenshot into the pull request Files tab', async ({ page }) => {
+  await signOutOfPullRequest(page);
+
+  await page.locator(`.row[data-path="${FIXTURE.added}"]`).click();
+
+  const anchor = createHash('sha256').update(FIXTURE.added).digest('hex');
+  await expect(page.locator('#crumbStem')).toHaveAttribute('href', `${PR_URL}/files#diff-${anchor}`);
 });

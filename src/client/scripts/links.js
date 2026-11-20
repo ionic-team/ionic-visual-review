@@ -5,6 +5,8 @@
  *   gets plain captions and no test link.
  * - The test link opens the spec at the line that took the screenshot, or the whole
  *   spec when the line can't be found. It is hidden when the spec is gone.
+ * - The screenshot's name links it in the pull request's Files tab, where a copied
+ *   comment can be pasted. Without a pull request it is plain text.
  * - Image URLs carry the head commit, so after Refresh the browser never shows an
  *   image cached from the previous push.
  */
@@ -45,6 +47,44 @@ export const setTestLink = (entry) => {
   dom.crumbTest.title = entry.test.line
     ? 'Open the line that took this screenshot'
     : 'Open the spec that took this screenshot. The exact line could not be placed.';
+};
+
+/**
+ * The hex SHA-256 of a path, which is how GitHub anchors a file in a pull request's
+ * Files tab.
+ * @param {string} path
+ * @returns {Promise<string>}
+ */
+const diffAnchor = async (path) => {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(path));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+};
+
+/**
+ * Links the screenshot's name to it in the pull request's Files tab, so a copied
+ * comment can be pasted on it. Plain text when there is no pull request.
+ * @param {Entry} entry
+ * @returns {Promise<void>}
+ */
+export const setPrLink = async (entry) => {
+  /* Cleared first, so the name never points at the previous screenshot while the
+     hash for this one is worked out. */
+  dom.crumbStem.removeAttribute('href');
+  dom.crumbStem.title = '';
+
+  if (!state.prUrl) {
+    return;
+  }
+
+  const anchor = await diffAnchor(entry.path);
+
+  /* Hashing is async, so a quick step through the list can finish out of order. */
+  if (state.current !== entry.path) {
+    return;
+  }
+
+  dom.crumbStem.href = `${state.prUrl}/files#diff-${anchor}`;
+  dom.crumbStem.title = `Open this screenshot in #${state.pr}'s Files tab`;
 };
 
 const CAPTION = { M: ['Expected', 'Actual'], R: ['Expected', 'Actual'], A: [null, 'Added'], D: ['Removed', null] };

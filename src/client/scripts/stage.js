@@ -13,11 +13,11 @@
  * - Fit zoom scales up to 3x. 1:1 and 2x use the screenshot's own size.
  * - Opening a screenshot also loads its viewed tick, comment and teammates' comments.
  */
-import { renderDelete, renderThreads } from './comments.js';
+import { renderActions, renderThreads } from './comments.js';
 import { COMPARING, STATUS_LABEL, VIEWS, dom } from './dom.js';
 import { entryFor, worthComparing } from './entries.js';
 import { kb, percent } from './format.js';
-import { blobUrl, setCaptionLink, setTestLink } from './links.js';
+import { blobUrl, setCaptionLink, setPrLink, setTestLink } from './links.js';
 import { state } from './state.js';
 
 /** @typedef {import('./state.js').Entry} Entry */
@@ -203,7 +203,8 @@ export const select = (path, { scroll = true } = {}) => {
   dom.viewed.checked = state.viewed.has(entry.path);
   dom.comment.value = state.comments.get(entry.path) ?? '';
   renderThreads();
-  renderDelete();
+  renderActions();
+  setPrLink(entry);
   dom.commentState.textContent = state.stale.has(entry.path) ? 'Written before this screenshot changed' : '';
   dom.comment.classList.toggle('stale', state.stale.has(entry.path));
 
